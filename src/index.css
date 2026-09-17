@@ -1,94 +1,210 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/**
+ * KALAPRITI ASSOCIATES — DESIGN TOKENS
+ *
+ * Colour: the client's supplied green palette is authoritative and used
+ * verbatim below. The warm neutrals are read from the client's own portfolio
+ * PDF ("Green and Beige Modern Minimalist") — deep green against cream, sand
+ * and light wood. Ochre appears in that photography too and is kept as a
+ * single restrained accent; the greens carry the brand.
+ *
+ * Direction: light and editorial, following the client's reference sites
+ * (thecompanyofdesign.com, dsgninterior.se) — image-led, generous whitespace,
+ * calm type. This deliberately replaces the previous dark, all-caps treatment.
+ */
 
 :root {
-  /* Colors - Kalapriti Associates Palette */
-  --bg-dark: #054409;      /* Primary Dark Green */
-  --bg-deep: #032b06;      /* Slightly darker variant for depth */
-  --bg-light: #f7f7f7;     /* Off-white background */
-  --bg-mint: #e0f4e1;      /* Light Green/Mint accents */
-  
-  --text-primary: #f7f7f7; /* White text for dark backgrounds */
-  --text-dark: #333333;    /* Grey text for light backgrounds */
-  --text-muted: #94ad95;   /* Soft Green for secondary text */
-  
-  --accent: #316737;       /* Medium Green */
-  --accent-soft: #94ad95;  /* Soft Green UI elements */
-  --accent-glow: #123d15;  /* Alternate Dark Green */
-  
-  /* Fonts */
-  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  
-  /* Animation Easing */
-  --ease-framer: cubic-bezier(0.16, 1, 0.3, 1);
+  /* — Greens: client palette, exact — */
+  --green-900: #054409;
+  --green-800: #123d15;
+  --green-600: #316737;
+  --green-300: #94ad95;
+  --green-100: #e0f4e1;
+
+  /* — Warm neutrals: from the portfolio PDF — */
+  --cream:     #faf7f1;
+  --sand-100:  #f2ece1;
+  --sand-200:  #e4dbcb;
+  --sand-300:  #cdc1ac;
+
+  /* — Client palette neutrals — */
+  --off-white: #f7f7f7;
+  --ink:       #333333;
+
+  /* — Restrained accent — */
+  --ochre:     #b0801f;
+
+  /* — Drafting grid (ink at very low opacity) — */
+  --grid-minor: rgba(5, 68, 9, 0.055);
+  --grid-major: rgba(5, 68, 9, 0.11);
+
+  /* — Semantic roles — */
+  --bg:            var(--cream);
+  --bg-alt:        var(--sand-100);
+  --bg-deep:       var(--green-900);
+  --bg-mint:       var(--green-100);
+  --surface:       #ffffff;
+
+  --text:          var(--ink);
+  --text-strong:   #1c1c1c;
+  --text-muted:    #6f6a60;
+  --text-on-dark:  var(--off-white);
+  --text-on-dark-muted: rgba(247, 247, 247, 0.66);
+
+  --line:          var(--sand-200);
+  --line-strong:   var(--sand-300);
+  --line-on-dark:  rgba(247, 247, 247, 0.18);
+
+  --accent:        var(--green-600);
+  --accent-deep:   var(--green-900);
+
+  /* — Type — */
+  --font-sans:  'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* — Scale — */
+  --step--1: clamp(0.82rem, 0.8rem + 0.1vw, 0.88rem);
+  --step-0:  clamp(1rem, 0.97rem + 0.15vw, 1.08rem);
+  --step-1:  clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --step-2:  clamp(1.6rem, 1.35rem + 1.2vw, 2.3rem);
+  --step-3:  clamp(2.1rem, 1.6rem + 2.4vw, 3.4rem);
+  --step-4:  clamp(2.8rem, 1.8rem + 4.6vw, 5.6rem);
+
+  /* — Space & motion — */
+  --gutter: clamp(20px, 5vw, 64px);
+  --section-y: clamp(64px, 9vw, 140px);
+  --maxw: 1320px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius: 2px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
 
 body {
-  font-family: var(--font-main);
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  line-height: 1.5;
-  overflow-x: hidden;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-main);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
-  text-transform: uppercase;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--text-strong);
+  text-wrap: balance;
 }
 
-a {
-  text-decoration: none;
+p { margin: 0; }
+
+img, svg, video {
+  display: block;
+  max-width: 100%;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button, input, textarea, select {
+  font: inherit;
   color: inherit;
-  transition: opacity 0.3s var(--ease-framer);
 }
 
-a:hover {
-  opacity: 0.7;
+/* — Shared type utilities — */
+
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
 }
+
+.eyebrow {
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 34ch;
+}
+
+.prose { max-width: 62ch; }
+
+/* — Layout primitives — */
 
 .container {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 60px;
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
-/* Glassmorphism Utilities */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.section { padding-block: var(--section-y); }
+
+.section--tint { background: var(--bg-alt); }
+.section--deep {
+  background: var(--bg-deep);
+  color: var(--text-on-dark);
+}
+.section--deep h1,
+.section--deep h2,
+.section--deep h3 { color: var(--text-on-dark); }
+.section--deep .eyebrow { color: var(--green-300); }
+.section--deep .lede { color: var(--text-on-dark-muted); }
+
+/* — Accessibility — */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
-.glass-dark {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--green-900);
+  color: var(--off-white);
+  padding: 12px 18px;
+}
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: #333;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #554;
+::selection {
+  background: var(--green-100);
+  color: var(--green-900);
 }

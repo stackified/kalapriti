@@ -1,0 +1,72 @@
+# CI for Kalapriti Associates.
+#
+# Pull requests: lint + build + verify the deploy path. Nothing is published.
+# Push to main:  the same checks, then publish dist/ to the gh-pages branch —
+#                the branch GitHub Pages already serves from, so no repo
+#                settings change is needed.
+#
+# The "verify base path" step exists because this site broke twice from a
+# hand-edited Vite base. If the built HTML doesn't reference /kalapriti/, the
+# job fails before anything is deployed.
+
+name: build-and-deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify base path
+        run: |
+          if ! grep -q 'src="/kalapriti/assets/' dist/index.html; then
+            echo "::error::dist/index.html does not reference /kalapriti/assets/ — Vite base is wrong. Refusing to deploy."
+            exit 1
+          fi
+          test -f dist/404.html || { echo "::error::dist/404.html missing — SPA deep links would break"; exit 1; }
+          echo "base path and SPA fallback OK"
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+      - name: Deploy to gh-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: "deploy: ${{ github.sha }}"
