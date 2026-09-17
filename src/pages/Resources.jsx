@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'wouter'
 import { ArrowUpRight, Plus, Minus } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import Reveal from '../components/Reveal'
@@ -105,7 +105,7 @@ export default function Resources() {
           </div>
 
           <Reveal delay={0.1}>
-            <Link to="/contact" className="link-arrow">
+            <Link href="/contact" className="link-arrow">
               Ask us something else <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </Reveal>

@@ -11,6 +11,26 @@
     />
 
     <link rel="canonical" href="https://stackified.github.io/kalapriti/" />
+
+    <!-- Fonts: linked here (not @import'd from CSS) so the browser discovers
+         them in the first HTML parse instead of after the stylesheet lands. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+    />
+
+    <!-- LCP image: preload the AVIF the hero will pick, so it starts
+         downloading with the HTML rather than after React mounts. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      imagesrcset="/kalapriti/assets/img/hero-640.avif 640w, /kalapriti/assets/img/hero-1280.avif 1280w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
     <link rel="icon" type="image/svg+xml" href="/kalapriti/assets/logo/logo-mark.svg" />
     <meta name="theme-color" content="#054409" />
 

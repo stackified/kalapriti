@@ -47,15 +47,25 @@ export const CONTACT = {
   instagram: 'https://instagram.com', // TODO(client): real handle pending (Q7)
 }
 
+/**
+ * Every page is a sheet in the drawing set. `sheet` is the title-block code
+ * rendered in each page header — the site's visual signature, so it belongs
+ * with the route rather than being typed into components.
+ */
 export const NAV = [
-  { label: 'Home', path: '/' },
-  { label: 'Projects', path: '/projects' },
-  { label: 'Services', path: '/services' },
-  { label: 'Process', path: '/process' },
-  { label: 'Resources', path: '/resources' },
-  { label: 'About', path: '/about' },
-  { label: 'Contact', path: '/contact' },
+  { label: 'Home',      path: '/',          sheet: 'A-000', title: 'Cover' },
+  { label: 'Projects',  path: '/projects',  sheet: 'A-100', title: 'Selected work' },
+  { label: 'Services',  path: '/services',  sheet: 'A-200', title: 'Scope of work' },
+  { label: 'Process',   path: '/process',   sheet: 'A-300', title: 'Sequence' },
+  { label: 'Resources', path: '/resources', sheet: 'A-400', title: 'Reference' },
+  { label: 'About',     path: '/about',     sheet: 'A-500', title: 'The practice' },
+  { label: 'Contact',   path: '/contact',   sheet: 'A-600', title: 'Enquiry' },
 ]
+
+export const sheetFor = (path) => NAV.find((n) => n.path === path) ?? { sheet: 'A-999', title: 'Not found' }
+
+/** Desktop-only drafting crosshair cursor. One flag to disable if the client dislikes it. */
+export const FEATURES = { cursor: true, smoothScroll: true, grain: true }
 
 export const VALUES = [
   {

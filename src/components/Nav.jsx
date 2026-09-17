@@ -1,24 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
-import { NavLink, Link, useLocation } from 'react-router-dom'
-// eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useLocation } from 'wouter'
 import { Menu, X } from 'lucide-react'
 import { BRAND, NAV, CONTACT, LOGO, asset } from '../data/site'
+
+const isActive = (loc, path) => (path === '/' ? loc === '/' : loc.startsWith(path))
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { pathname } = useLocation()
+  const [loc] = useLocation()
   const toggleRef = useRef(null)
 
-  // Close the menu on navigation. Adjusted during render rather than in an
-  // effect — this is the pattern React recommends for state that derives from
-  // a changing prop, and it avoids a cascading second render.
-  const [lastPath, setLastPath] = useState(pathname)
-  if (pathname !== lastPath) {
-    setLastPath(pathname)
-    setOpen(false)
-  }
+  // Close on navigation — adjusted during render, the React-recommended shape
+  // for state that derives from a changing value; avoids a cascading effect.
+  const [lastLoc, setLastLoc] = useState(loc)
+  if (loc !== lastLoc) { setLastLoc(loc); setOpen(false) }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -27,37 +23,28 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Escape to close, and lock background scroll while open.
+  // Escape closes; background scroll locks while the panel is open.
   useEffect(() => {
     if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        toggleRef.current?.focus()
-      }
-    }
+    const onKey = (e) => { if (e.key === 'Escape') { setOpen(false); toggleRef.current?.focus() } }
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = prev
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey) }
   }, [open])
 
-  // The transparent/light treatment only works over the home hero. Every other
-  // page opens on a cream ground, where a white mark and white links would be
-  // invisible — so those render solid from the first paint.
-  const overHero = pathname === '/'
+  // The transparent treatment is only legible over the home hero; every other
+  // page opens on cream, so it renders solid from the first paint.
+  const overHero = loc === '/'
   const solid = !overHero || scrolled || open
 
   return (
     <header className={`nav ${solid ? 'is-solid' : ''} ${open ? 'is-open' : ''}`}>
       <div className="nav__inner container">
-        <Link to="/" className="nav__brand" aria-label={`${BRAND.nameFull} — home`}>
+        <Link href="/" className="nav__brand" aria-label={`${BRAND.nameFull} — home`}>
           <span className="nav__mark" aria-hidden="true">
-            <img className="nav__mark-dark" src={asset(LOGO.dark)} alt="" />
-            <img className="nav__mark-reverse" src={asset(LOGO.reverse)} alt="" />
+            <img className="nav__mark-dark" src={asset(LOGO.dark)} alt="" width="46" height="38" />
+            <img className="nav__mark-reverse" src={asset(LOGO.reverse)} alt="" width="46" height="38" />
           </span>
           <span className="nav__brand-text">
             <strong>{BRAND.nameUpper}</strong>
@@ -67,14 +54,14 @@ export default function Nav() {
 
         <nav className="nav__links" aria-label="Primary">
           {NAV.map((item) => (
-            <NavLink
+            <Link
               key={item.path}
-              to={item.path}
-              end={item.path === '/'}
-              className={({ isActive }) => `nav__link ${isActive ? 'is-active' : ''}`}
+              href={item.path}
+              className={`nav__link ${isActive(loc, item.path) ? 'is-active' : ''}`}
+              aria-current={isActive(loc, item.path) ? 'page' : undefined}
             >
               {item.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
 
@@ -94,32 +81,24 @@ export default function Nav() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-menu"
-            className="nav__panel"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="container nav__panel-inner">
-              {NAV.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.path === '/'}
-                  className={({ isActive }) => `nav__panel-link ${isActive ? 'is-active' : ''}`}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-              <a href={CONTACT.phoneHref} className="nav__panel-phone">{CONTACT.phone}</a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Panel is always in the DOM; CSS transitions drive open/close, so there
+          is no JS animation to stall and no library to ship for it. */}
+      <div id="mobile-menu" className="nav__panel" hidden={!open} aria-hidden={!open}>
+        <div className="container nav__panel-inner">
+          {NAV.map((item, i) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              className={`nav__panel-link ${isActive(loc, item.path) ? 'is-active' : ''}`}
+              style={{ '--i': i }}
+            >
+              <span className="nav__panel-sheet">{item.sheet}</span>
+              {item.label}
+            </Link>
+          ))}
+          <a href={CONTACT.phoneHref} className="nav__panel-phone">{CONTACT.phone}</a>
+        </div>
+      </div>
     </header>
   )
 }
