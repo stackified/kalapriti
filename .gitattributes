@@ -1,0 +1,9 @@
+# Normalise line endings so Windows and CI don't produce whole-file diffs.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.svg text eol=lf
+*.pdf binary
