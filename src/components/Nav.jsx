@@ -45,8 +45,14 @@ export default function Nav() {
     }
   }, [open])
 
+  // The transparent/light treatment only works over the home hero. Every other
+  // page opens on a cream ground, where a white mark and white links would be
+  // invisible — so those render solid from the first paint.
+  const overHero = pathname === '/'
+  const solid = !overHero || scrolled || open
+
   return (
-    <header className={`nav ${scrolled ? 'is-scrolled' : ''} ${open ? 'is-open' : ''}`}>
+    <header className={`nav ${solid ? 'is-solid' : ''} ${open ? 'is-open' : ''}`}>
       <div className="nav__inner container">
         <Link to="/" className="nav__brand" aria-label={`${BRAND.nameFull} — home`}>
           <span className="nav__mark" aria-hidden="true">

@@ -66,11 +66,11 @@
               border-color 0.4s var(--ease);
   border-bottom: 1px solid transparent;
 }
-.nav.is-open {
-  background: var(--cream);
-  border-bottom-color: transparent;
-}
-.nav.is-scrolled {
+/* is-open only suppresses the divider — the panel carries its own. Background
+   comes from is-solid, which is always set when the panel is open, so the two
+   states never compete for the same declaration. */
+.nav.is-open { border-bottom-color: transparent; }
+.nav.is-solid {
   background: rgba(250, 247, 241, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -111,7 +111,7 @@
    opacity 0 in the production build only. One declaration per element cannot be
    merged into a conflict. */
 .nav { --mark-dark: 0; --mark-reverse: 1; }
-.nav.is-scrolled,
+.nav.is-solid,
 .nav.is-open { --mark-dark: 1; --mark-reverse: 0; }
 
 .nav__mark-dark { opacity: var(--mark-dark); }
@@ -130,8 +130,8 @@
   text-transform: uppercase;
   color: var(--text-muted);
 }
-.nav:not(.is-scrolled) .nav__brand-text strong { color: var(--off-white); }
-.nav:not(.is-scrolled) .nav__brand-text em { color: rgba(247, 247, 247, 0.7); }
+.nav:not(.is-solid) .nav__brand-text strong { color: var(--off-white); }
+.nav:not(.is-solid) .nav__brand-text em { color: rgba(247, 247, 247, 0.7); }
 
 .nav__links { display: flex; align-items: center; gap: 30px; }
 .nav__link {
@@ -144,9 +144,9 @@
 }
 .nav__link:hover { color: var(--text-strong); }
 .nav__link.is-active { color: var(--accent-deep); border-bottom-color: var(--accent); }
-.nav:not(.is-scrolled) .nav__link { color: rgba(247, 247, 247, 0.82); }
-.nav:not(.is-scrolled) .nav__link:hover { color: #fff; }
-.nav:not(.is-scrolled) .nav__link.is-active { color: #fff; border-bottom-color: rgba(255, 255, 255, 0.8); }
+.nav:not(.is-solid) .nav__link { color: rgba(247, 247, 247, 0.82); }
+.nav:not(.is-solid) .nav__link:hover { color: #fff; }
+.nav:not(.is-solid) .nav__link.is-active { color: #fff; border-bottom-color: rgba(255, 255, 255, 0.8); }
 
 .nav__actions { display: flex; align-items: center; gap: 16px; }
 .nav__phone {
@@ -155,7 +155,7 @@
   color: var(--text-strong);
   white-space: nowrap;
 }
-.nav:not(.is-scrolled) .nav__phone { color: var(--off-white); }
+.nav:not(.is-solid) .nav__phone { color: var(--off-white); }
 
 .nav__toggle {
   display: none;
@@ -168,7 +168,7 @@
   color: var(--text-strong);
   cursor: pointer;
 }
-.nav:not(.is-scrolled) .nav__toggle { color: var(--off-white); border-color: rgba(247, 247, 247, 0.4); }
+.nav:not(.is-solid) .nav__toggle { color: var(--off-white); border-color: rgba(247, 247, 247, 0.4); }
 
 .nav__panel {
   background: var(--cream);
