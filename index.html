@@ -3,8 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KALAPRITI ASSOCIATES</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/logo/Asset 17.svg" />
+
+    <title>Kalapriti Designs | Architectural &amp; Design Consultancy</title>
+    <meta
+      name="description"
+      content="Kalapriti Designs is an architectural and design consultancy working across exterior and interior design — from planning and landscape to interiors, renovation and turnkey delivery."
+    />
+
+    <link rel="canonical" href="https://stackified.github.io/kalapriti/" />
+
+    <!-- Fonts: linked here (not @import'd from CSS) so the browser discovers
+         them in the first HTML parse instead of after the stylesheet lands. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+    />
+
+    <!-- LCP image: preload the AVIF the hero will pick, so it starts
+         downloading with the HTML rather than after React mounts. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      imagesrcset="/kalapriti/assets/img/hero-640.avif 640w, /kalapriti/assets/img/hero-1280.avif 1280w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+    <link rel="icon" type="image/svg+xml" href="/kalapriti/assets/logo/logo-mark.svg" />
+    <meta name="theme-color" content="#054409" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kalapriti Designs" />
+    <meta property="og:title" content="Kalapriti Designs | Architectural &amp; Design Consultancy" />
+    <meta
+      property="og:description"
+      content="An architecture and interior practice working across exterior and interior design — from first sketch to styled handover."
+    />
+    <meta property="og:url" content="https://stackified.github.io/kalapriti/" />
+    <!-- TODO(client): replace with a purpose-made 1200x630 social card. -->
+    <meta property="og:image" content="https://stackified.github.io/kalapriti/assets/hero.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "Kalapriti Designs",
+        "description": "Architectural and design consultancy working across exterior and interior design.",
+        "url": "https://stackified.github.io/kalapriti/",
+        "telephone": "+91-94285-79905",
+        "email": "kalapritidesigns@gmail.com",
+        "areaServed": "IN",
+        "knowsLanguage": "en",
+        "founder": { "@type": "Person", "name": "Jitendrakumar Patel" }
+      }
+    </script>
+
+    <!--
+      GitHub Pages SPA support.
+      Pages has no server-side rewrite, so a deep link like /kalapriti/services
+      is served 404.html. That file encodes the path into a query string and
+      redirects here; this script restores the real URL before React mounts.
+      Remove both once the site moves to a host with proper SPA rewrites.
+    -->
+    <script>
+      (function () {
+        var q = window.location.search
+        if (q.indexOf('?/') === 0) {
+          var decoded = q
+            .slice(2)
+            .split('&')
+            .map(function (s) { return s.replace(/~and~/g, '&') })
+            .join('?')
+          window.history.replaceState(
+            null,
+            null,
+            window.location.pathname.replace(/\/$/, '') + '/' + decoded + window.location.hash
+          )
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
