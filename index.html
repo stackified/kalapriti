@@ -61,6 +61,23 @@
       }
     </script>
 
+
+    <!--
+      Restores the real URL after the staging (GitHub Pages) 404.html redirect.
+      Inert in production: Apache rewrites server-side and never produces "?/".
+    -->
+    <script>
+      (function () {
+        var q = window.location.search
+        if (q.indexOf('?/') === 0) {
+          var decoded = q.slice(2).split('&')
+            .map(function (s) { return s.replace(/~and~/g, '&') })
+            .join('?')
+          window.history.replaceState(null, null,
+            window.location.pathname.replace(/\/$/, '') + '/' + decoded + window.location.hash)
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

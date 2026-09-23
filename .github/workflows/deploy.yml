@@ -1,33 +1,37 @@
-# CI for Kalapriti Designs.
+# CI for Kalapriti Designs — two environments from one codebase.
 #
-# Pull requests: lint + build + verify the output. Nothing is published.
-# Push to main:  the same checks, then upload the build to Hostinger over FTPS.
+#   dev  branch -> STAGING     -> GitHub Pages  https://stackified.github.io/kalapriti/
+#   main branch -> PRODUCTION  -> Hostinger     https://kalapritidesigns.com
 #
-# The site is served from public_html on Hostinger shared hosting at
-# kalapritidesigns.com. Repo visibility is irrelevant to hosting — only the
-# built files are transferred.
+# Pull requests build and verify against the target branch's environment but
+# never publish. Only a push (i.e. a merge) deploys.
 #
-# REQUIRED SECRETS (Settings -> Secrets and variables -> Actions):
-#   FTP_SERVER    hostname from hPanel -> Files -> FTP Accounts (e.g. ftp.kalapritidesigns.com)
+# REQUIRED SECRETS for production (Settings -> Secrets and variables -> Actions):
+#   FTP_SERVER    hostname from hPanel -> Files -> FTP Accounts
 #   FTP_USERNAME  FTP account username
 #   FTP_PASSWORD  FTP account password
 #
-# Credentials live only in GitHub Secrets; they are never written into the repo.
+# Credentials live only in GitHub Secrets and are never committed.
+#
+# NOTE: staging depends on GitHub Pages, which does not serve from a private
+# repository on the Free plan. If this repo goes private, staging needs either
+# GitHub Pro or a move to a Hostinger subdomain.
 
 name: build-and-deploy
 
 on:
   pull_request:
-    branches: [main]
+    branches: [dev, main]
   push:
-    branches: [main]
+    branches: [dev, main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: hostinger-deploy
+  # Keyed per branch so a staging deploy never cancels a production one.
+  group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -41,42 +45,84 @@ jobs:
           node-version: 22
           cache: npm
 
+      # One place decides the environment; every later step reads these outputs,
+      # so a PR is built exactly the way its target branch will be.
+      - name: Resolve environment
+        id: env
+        run: |
+          TARGET="${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}"
+          if [ "$TARGET" = "main" ]; then
+            echo "name=production"      >> "$GITHUB_OUTPUT"
+            echo "base=/"               >> "$GITHUB_OUTPUT"
+            echo "vite_env=production"  >> "$GITHUB_OUTPUT"
+          else
+            echo "name=staging"         >> "$GITHUB_OUTPUT"
+            echo "base=/kalapriti/"     >> "$GITHUB_OUTPUT"
+            echo "vite_env=staging"     >> "$GITHUB_OUTPUT"
+          fi
+          echo "Target branch: $TARGET"
+
       - name: Install
         run: npm ci
 
       - name: Lint
         run: npm run lint
 
-      - name: Build
+      - name: Build (${{ steps.env.outputs.name }})
+        env:
+          VITE_BASE: ${{ steps.env.outputs.base }}
+          VITE_ENV: ${{ steps.env.outputs.vite_env }}
         run: npm run build
 
-      # Guards for the failures that have actually bitten this project before:
-      # a wrong base path shipping subpath-prefixed URLs, and .htaccess being
-      # dropped from the build (which would silently break every deep link).
+      # Guards for the failures that have actually bitten this project: a wrong
+      # base path, a missing .htaccess (every deep link would 404 on Apache),
+      # and staging accidentally shipping an indexable robots.txt.
       - name: Verify build output
         run: |
           set -e
-          if grep -q 'src="/kalapriti/assets/' dist/index.html; then
-            echo "::error::dist/index.html still references the /kalapriti/ subpath — Vite base is wrong."
-            exit 1
+          BASE='${{ steps.env.outputs.base }}'
+          if [ "$BASE" = "/" ]; then
+            grep -q 'src="/assets/' dist/index.html \
+              || { echo "::error::production build has no root-relative asset URLs"; exit 1; }
+            grep -q 'src="/kalapriti/assets/' dist/index.html \
+              && { echo "::error::production build still carries the /kalapriti/ subpath"; exit 1; }
+            test -f dist/.htaccess \
+              || { echo "::error::dist/.htaccess missing — deep links would 404 on Apache"; exit 1; }
+            grep -q 'RewriteRule ^ index.html' dist/.htaccess \
+              || { echo "::error::.htaccess has lost its SPA fallback rule"; exit 1; }
+          else
+            grep -q 'src="/kalapriti/assets/' dist/index.html \
+              || { echo "::error::staging build is missing the /kalapriti/ base"; exit 1; }
+            test -f dist/404.html \
+              || { echo "::error::dist/404.html missing — deep links would break on GitHub Pages"; exit 1; }
+            grep -q 'pathSegmentsToKeep = 1' dist/404.html \
+              || { echo "::error::404.html has the wrong pathSegmentsToKeep for this base"; exit 1; }
+            grep -q 'Disallow: /' dist/robots.txt \
+              || { echo "::error::staging robots.txt is indexable — it would compete with the live domain"; exit 1; }
           fi
-          grep -q 'src="/assets/' dist/index.html \
-            || { echo "::error::dist/index.html has no root-relative asset URLs."; exit 1; }
-          test -f dist/.htaccess \
-            || { echo "::error::dist/.htaccess missing — deep links would 404 on Apache."; exit 1; }
-          grep -q 'RewriteRule ^ index.html' dist/.htaccess \
-            || { echo "::error::.htaccess has no SPA fallback rule."; exit 1; }
-          echo "build output OK"
+          echo "${{ steps.env.outputs.name }} build output OK"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ steps.env.outputs.name }}
           path: dist
           retention-days: 7
 
-      - name: Deploy to Hostinger
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      # ── STAGING: dev -> GitHub Pages ──
+      - name: Deploy staging to GitHub Pages
+        if: github.event_name == 'push' && github.ref_name == 'dev'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: "staging: ${{ github.sha }}"
+
+      # ── PRODUCTION: main -> Hostinger ──
+      - name: Deploy production to Hostinger
+        if: github.event_name == 'push' && github.ref_name == 'main'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -85,8 +131,7 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./public_html/
-          # Only changed files are transferred; the action keeps a manifest on
-          # the server so a normal deploy moves kilobytes, not the whole build.
+          # Only changed files transfer; the action keeps a manifest server-side.
           dangerous-clean-slate: false
           exclude: |
             **/.git*
