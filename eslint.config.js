@@ -26,4 +26,10 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  {
+    // Build-time config runs in Node, not the browser: it reads process.env and
+    // writes files. Without this it trips no-undef on `process`.
+    files: ['vite.config.js', 'eslint.config.js', 'scripts/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])
