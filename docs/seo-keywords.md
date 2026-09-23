@@ -2,7 +2,8 @@
 
 ## Primary Keywords
 
-- kalapreeti associates
+- kalapriti designs
+- kalapriti
 - architectural consultancy
 - design consultancy
 - architecture and interior design studio
