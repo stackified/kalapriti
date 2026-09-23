@@ -1,80 +1,91 @@
 /**
- * KALAPRITI ASSOCIATES — DESIGN TOKENS
+ * KALAPRITI DESIGNS — DESIGN TOKENS
  *
- * Colour: the client's supplied green palette is authoritative and used
- * verbatim below. The warm neutrals are read from the client's own portfolio
- * PDF ("Green and Beige Modern Minimalist") — deep green against cream, sand
- * and light wood. Ochre appears in that photography too and is kept as a
- * single restrained accent; the greens carry the brand.
+ * Palette agreed with the client (23 Sep): white / beige, dusky olive green,
+ * and burgundy as the accent. No brown. The green is deliberately desaturated —
+ * the client rejected bright, "shiny" greens in favour of a dull, dusky olive,
+ * so these values sit close to #313829 from the Stitch design spec rather than
+ * the saturated #054409 used in the first build.
  *
- * Direction: light and editorial, following the client's reference sites
- * (thecompanyofdesign.com, dsgninterior.se) — image-led, generous whitespace,
- * calm type. This deliberately replaces the previous dark, all-caps treatment.
+ * Section rhythm follows the client's instruction: a light beige opening, then
+ * darker olive, with burgundy for a single deep accent band.
+ *
+ * Type: EB Garamond for display, DM Sans for everything else — the pairing from
+ * the client's own Stitch design system.
  */
 
 :root {
-  /* — Greens: client palette, exact — */
-  --green-900: #054409;
-  --green-800: #123d15;
-  --green-600: #316737;
-  --green-300: #94ad95;
-  --green-100: #e0f4e1;
+  /* — Light grounds — */
+  --cream:     #faf8f3;
+  --beige-50:  #f4f0e7;
+  --beige-100: #ebe5d8;
+  --beige-200: #ddd4c2;
+  --beige-300: #c6bba5;
 
-  /* — Warm neutrals: from the portfolio PDF — */
-  --cream:     #faf7f1;
-  --sand-100:  #f2ece1;
-  --sand-200:  #e4dbcb;
-  --sand-300:  #cdc1ac;
+  /* — Olive: dusky, low-chroma — */
+  --olive-900: #1c1f18;
+  --olive-800: #24291e;
+  --olive-700: #313829;
+  --olive-600: #3f4834;
+  --olive-400: #6d7663;
+  --olive-200: #a7b09b;
+  --olive-100: #dfe4d6;
 
-  /* — Client palette neutrals — */
+  /* — Burgundy accent — */
+  --wine-900: #2b1018;
+  --wine-800: #3c1721;
+  --wine-700: #4e1f2c;
+  --wine-500: #78334a;
+  --wine-200: #d7b2bd;
+
+  /* — Neutrals — */
+  --ink:       #1b1d18;
+  --stone:     #dad4ce;
   --off-white: #f7f7f7;
-  --ink:       #333333;
-
-  /* — Restrained accent — */
-  --ochre:     #b0801f;
-
-  /* — Drafting grid (ink at very low opacity) — */
-  --grid-minor: rgba(5, 68, 9, 0.055);
-  --grid-major: rgba(5, 68, 9, 0.11);
 
   /* — Semantic roles — */
   --bg:            var(--cream);
-  --bg-alt:        var(--sand-100);
-  --bg-deep:       var(--green-900);
-  --bg-mint:       var(--green-100);
+  --bg-alt:        var(--beige-50);
+  --bg-deep:       var(--olive-700);
+  --bg-wine:       var(--wine-700);
   --surface:       #ffffff;
 
-  --text:          var(--ink);
-  --text-strong:   #1c1c1c;
-  --text-muted:    #6f6a60;
+  --text:          #40443c;
+  --text-strong:   var(--ink);
+  --text-muted:    #6f7468;
   --text-on-dark:  var(--off-white);
-  --text-on-dark-muted: rgba(247, 247, 247, 0.66);
+  --text-on-dark-muted: rgba(247, 247, 247, 0.72);
 
-  --line:          var(--sand-200);
-  --line-strong:   var(--sand-300);
-  --line-on-dark:  rgba(247, 247, 247, 0.18);
+  --line:          var(--beige-200);
+  --line-strong:   var(--beige-300);
+  --line-on-dark:  rgba(247, 247, 247, 0.2);
 
-  --accent:        var(--green-600);
-  --accent-deep:   var(--green-900);
+  --accent:        var(--olive-600);
+  --accent-deep:   var(--olive-700);
+  --accent-wine:   var(--wine-500);
+
+  /* — Drafting grid (ink at very low opacity) — */
+  --grid-minor: rgba(49, 56, 41, 0.05);
+  --grid-major: rgba(49, 56, 41, 0.095);
 
   /* — Type — */
-  --font-sans:  'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-sans:  'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
 
-  /* — Scale — */
-  --step--1: clamp(0.82rem, 0.8rem + 0.1vw, 0.88rem);
-  --step-0:  clamp(1rem, 0.97rem + 0.15vw, 1.08rem);
-  --step-1:  clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
-  --step-2:  clamp(1.6rem, 1.35rem + 1.2vw, 2.3rem);
-  --step-3:  clamp(2.1rem, 1.6rem + 2.4vw, 3.4rem);
-  --step-4:  clamp(2.8rem, 1.8rem + 4.6vw, 5.6rem);
+  /* — Scale — slightly larger across the board at the client's request — */
+  --step--1: clamp(0.84rem, 0.81rem + 0.12vw, 0.92rem);
+  --step-0:  clamp(1.04rem, 1rem + 0.18vw, 1.14rem);
+  --step-1:  clamp(1.26rem, 1.14rem + 0.55vw, 1.55rem);
+  --step-2:  clamp(1.7rem, 1.4rem + 1.35vw, 2.5rem);
+  --step-3:  clamp(2.2rem, 1.65rem + 2.6vw, 3.7rem);
+  --step-4:  clamp(3rem, 1.9rem + 5.2vw, 6.2rem);
 
   /* — Space & motion — */
   --gutter: clamp(20px, 5vw, 64px);
   --section-y: clamp(64px, 9vw, 140px);
-  --maxw: 1320px;
+  --maxw: 1440px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius: 2px;
+  --radius: 4px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -97,8 +108,8 @@ body {
 h1, h2, h3, h4 {
   margin: 0;
   font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
+  line-height: 1.06;
+  letter-spacing: -0.012em;
   color: var(--text-strong);
   text-wrap: balance;
 }
@@ -122,14 +133,14 @@ button, input, textarea, select {
 .serif {
   font-family: var(--font-serif);
   font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.02;
+  letter-spacing: -0.005em;
+  line-height: 1.04;
 }
 
 .eyebrow {
   font-size: var(--step--1);
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--accent);
 }
@@ -155,15 +166,20 @@ button, input, textarea, select {
 .section { padding-block: var(--section-y); }
 
 .section--tint { background: var(--bg-alt); }
+
 .section--deep {
   background: var(--bg-deep);
   color: var(--text-on-dark);
 }
-.section--deep h1,
-.section--deep h2,
-.section--deep h3 { color: var(--text-on-dark); }
-.section--deep .eyebrow { color: var(--green-300); }
-.section--deep .lede { color: var(--text-on-dark-muted); }
+.section--wine {
+  background: var(--bg-wine);
+  color: var(--text-on-dark);
+}
+.section--deep h1, .section--deep h2, .section--deep h3,
+.section--wine h1, .section--wine h2, .section--wine h3 { color: var(--text-on-dark); }
+.section--deep .eyebrow { color: var(--olive-200); }
+.section--wine .eyebrow { color: var(--wine-200); }
+.section--deep .lede, .section--wine .lede { color: var(--text-on-dark-muted); }
 
 /* — Accessibility — */
 
@@ -177,14 +193,11 @@ button, input, textarea, select {
   left: -9999px;
   top: 0;
   z-index: 200;
-  background: var(--green-900);
+  background: var(--olive-700);
   color: var(--off-white);
   padding: 12px 18px;
 }
-.skip-link:focus {
-  left: 12px;
-  top: 12px;
-}
+.skip-link:focus { left: 12px; top: 12px; }
 
 .visually-hidden {
   position: absolute;
@@ -205,6 +218,6 @@ button, input, textarea, select {
 }
 
 ::selection {
-  background: var(--green-100);
-  color: var(--green-900);
+  background: var(--olive-100);
+  color: var(--olive-900);
 }

@@ -8,10 +8,11 @@
 
 export const BRAND = {
   name: 'Kalapriti',
-  nameFull: 'Kalapriti Associates',
+  nameFull: 'Kalapriti Designs',
   nameUpper: 'KALAPRITI',
+  nameSuffix: 'Designs',
   discipline: 'Architectural & Design Consultancy',
-  tagline: 'shaping spaces that hold their value',
+  tagline: 'stories behind every detail',
   established: 2025,
 }
 
@@ -33,38 +34,53 @@ export const LOGO = {
   reverse: 'assets/logo/logo-mark-reverse.svg',
 }
 
+/**
+ * Hero video. The client asked for motion in the hero; drop the file into
+ * public/assets and set this to { src, poster } to switch it on. While it is
+ * null the hero renders the responsive still instead.
+ *
+ * Keep it short (6-10s), muted, H.264 .mp4, and ideally under ~3 MB — it is the
+ * first thing that loads, so weight here is felt directly.
+ */
+export const HERO_VIDEO = null
+// export const HERO_VIDEO = { src: 'assets/hero.mp4', poster: 'assets/img/hero-1280.avif' }
+
 export const CONTACT = {
   principal: 'Jitendrakumar Patel',
   principalRole: 'Principal Consultant',
-  phone: '+91 97275 79905',
-  phoneHref: 'tel:+919727579905',
-  // TODO(client): destination inbox not yet confirmed — Q10 deferred.
-  // Leave null; the UI hides the email row rather than inventing an address.
-  email: null,
+  phone: '+91 94285 79905',
+  phoneHref: 'tel:+919428579905',
+  whatsappHref: 'https://wa.me/919428579905',
+  email: 'kalapritidesigns@gmail.com',
   // Online-only practice — client confirmed no published address (Q9).
   address: null,
   addressNote: 'Online-first studio — we work on site, across Gujarat and beyond.',
-  instagram: 'https://instagram.com', // TODO(client): real handle pending (Q7)
+  instagram: 'https://instagram.com/kalapritidesigns',
+  instagramHandle: '@kalapritidesigns',
 }
 
 /**
- * Every page is a sheet in the drawing set. `sheet` is the title-block code
- * rendered in each page header — the site's visual signature, so it belongs
- * with the route rather than being typed into components.
+ * Site navigation. `hidden: true` keeps the route working (so the client can
+ * still preview the page by URL) while leaving it out of every menu — Projects
+ * and Resources are held back until real content arrives.
  */
 export const NAV = [
-  { label: 'Home',      path: '/',          sheet: 'A-000', title: 'Cover' },
-  { label: 'Projects',  path: '/projects',  sheet: 'A-100', title: 'Selected work' },
-  { label: 'Services',  path: '/services',  sheet: 'A-200', title: 'Scope of work' },
-  { label: 'Process',   path: '/process',   sheet: 'A-300', title: 'Sequence' },
-  { label: 'Resources', path: '/resources', sheet: 'A-400', title: 'Reference' },
-  { label: 'About',     path: '/about',     sheet: 'A-500', title: 'The practice' },
-  { label: 'Contact',   path: '/contact',   sheet: 'A-600', title: 'Enquiry' },
+  { label: 'Home',      path: '/' },
+  { label: 'Projects',  path: '/projects',  hidden: true },
+  { label: 'Services',  path: '/services' },
+  { label: 'Process',   path: '/process' },
+  { label: 'Resources', path: '/resources', hidden: true },
+  { label: 'About',     path: '/about' },
+  { label: 'Contact',   path: '/contact' },
 ]
 
-export const sheetFor = (path) => NAV.find((n) => n.path === path) ?? { sheet: 'A-999', title: 'Not found' }
+/** What appears in menus. */
+export const VISIBLE_NAV = NAV.filter((n) => !n.hidden)
 
-/** Desktop-only drafting crosshair cursor. One flag to disable if the client dislikes it. */
+/**
+ * Feature switches. `cursor` is the desktop drafting crosshair; turn it off if
+ * it reads as too playful for the brand.
+ */
 export const FEATURES = { cursor: true, smoothScroll: true, grain: true }
 
 export const VALUES = [

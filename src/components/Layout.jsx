@@ -8,6 +8,7 @@ import Nav from './Nav'
 import Footer from './Footer'
 import Atmosphere from './Atmosphere'
 import Cursor from './Cursor'
+import FloatingActions from './FloatingActions'
 
 /**
  * Smooth scroll, synced to ScrollTrigger so every scroll-driven animation
@@ -110,6 +111,7 @@ export default function Layout({ children }) {
         {children}
       </main>
       <Footer />
+      <FloatingActions />
     </>
   )
 }
