@@ -1,4 +1,4 @@
-# Kalapreeti Associates Values
+# Kalapriti Designs Values
 
 ## Core Values
 
@@ -11,7 +11,7 @@
 
 - Use architecture-first language with concise, meaningful copy.
 - Keep tone premium, clear, and confident without exaggeration.
-- Maintain naming and spelling consistency: **Kalapreeti Associates**.
+- Maintain naming and spelling consistency: **Kalapriti Designs**.
 
 ## Design Standards
 

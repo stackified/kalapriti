@@ -1,6 +1,6 @@
-# Kalapriti Associates
+# Kalapriti Designs
 
-Website for **Kalapriti Associates**, an architectural and design consultancy.
+Website for **Kalapriti Designs**, an architectural and design consultancy.
 
 React 19 + Vite, deployed to GitHub Pages.
 
