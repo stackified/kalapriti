@@ -1,13 +1,18 @@
-# CI for Kalapriti Associates.
+# CI for Kalapriti Designs.
 #
-# Pull requests: lint + build + verify the deploy path. Nothing is published.
-# Push to main:  the same checks, then publish dist/ to the gh-pages branch —
-#                the branch GitHub Pages already serves from, so no repo
-#                settings change is needed.
+# Pull requests: lint + build + verify the output. Nothing is published.
+# Push to main:  the same checks, then upload the build to Hostinger over FTPS.
 #
-# The "verify base path" step exists because this site broke twice from a
-# hand-edited Vite base. If the built HTML doesn't reference /kalapriti/, the
-# job fails before anything is deployed.
+# The site is served from public_html on Hostinger shared hosting at
+# kalapritidesigns.com. Repo visibility is irrelevant to hosting — only the
+# built files are transferred.
+#
+# REQUIRED SECRETS (Settings -> Secrets and variables -> Actions):
+#   FTP_SERVER    hostname from hPanel -> Files -> FTP Accounts (e.g. ftp.kalapritidesigns.com)
+#   FTP_USERNAME  FTP account username
+#   FTP_PASSWORD  FTP account password
+#
+# Credentials live only in GitHub Secrets; they are never written into the repo.
 
 name: build-and-deploy
 
@@ -19,10 +24,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: pages-deploy
+  group: hostinger-deploy
   cancel-in-progress: true
 
 jobs:
@@ -45,28 +50,45 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify base path
+      # Guards for the failures that have actually bitten this project before:
+      # a wrong base path shipping subpath-prefixed URLs, and .htaccess being
+      # dropped from the build (which would silently break every deep link).
+      - name: Verify build output
         run: |
-          if ! grep -q 'src="/kalapriti/assets/' dist/index.html; then
-            echo "::error::dist/index.html does not reference /kalapriti/assets/ — Vite base is wrong. Refusing to deploy."
+          set -e
+          if grep -q 'src="/kalapriti/assets/' dist/index.html; then
+            echo "::error::dist/index.html still references the /kalapriti/ subpath — Vite base is wrong."
             exit 1
           fi
-          test -f dist/404.html || { echo "::error::dist/404.html missing — SPA deep links would break"; exit 1; }
-          echo "base path and SPA fallback OK"
+          grep -q 'src="/assets/' dist/index.html \
+            || { echo "::error::dist/index.html has no root-relative asset URLs."; exit 1; }
+          test -f dist/.htaccess \
+            || { echo "::error::dist/.htaccess missing — deep links would 404 on Apache."; exit 1; }
+          grep -q 'RewriteRule ^ index.html' dist/.htaccess \
+            || { echo "::error::.htaccess has no SPA fallback rule."; exit 1; }
+          echo "build output OK"
 
-      - name: Upload build
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
           retention-days: 7
 
-      - name: Deploy to gh-pages
+      - name: Deploy to Hostinger
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          commit_message: "deploy: ${{ github.sha }}"
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./dist/
+          server-dir: ./public_html/
+          # Only changed files are transferred; the action keeps a manifest on
+          # the server so a normal deploy moves kilobytes, not the whole build.
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

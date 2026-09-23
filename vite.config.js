@@ -4,19 +4,14 @@ import react from '@vitejs/plugin-react'
 /**
  * DEPLOY PATH — SINGLE SOURCE OF TRUTH
  *
- * The brand is spelled "Kalapriti" everywhere a human can see it.
- * This path is NOT the brand name — it is the GitHub repository name,
- * which GitHub Pages serves from and which is case-sensitive:
+ * The site is served from the apex of kalapritidesigns.com on Hostinger
+ * shared hosting, so the base is "/". Everything else derives from this:
+ * asset URLs come from `asset()` in src/data/site.js, which reads
+ * import.meta.env.BASE_URL. Never hardcode a prefix in a component.
  *
- *   repo  github.com/stackified/kalapriti
- *   live  stackified.github.io/kalapriti/
- *
- * Never hardcode this prefix anywhere else. Every asset URL is built from
- * `import.meta.env.BASE_URL`, so this line is the only place that changes if
- * the repo is renamed to `kalapriti`, or when the site moves to kalapriti.com
- * (at which point this becomes "/").
+ * If the site ever moves back under a subpath, change this line only.
  */
 export default defineConfig({
   plugins: [react()],
-  base: '/kalapriti/',
+  base: '/',
 })

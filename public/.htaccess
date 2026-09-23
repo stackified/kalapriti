@@ -1,0 +1,90 @@
+# Kalapriti Designs — Apache config for Hostinger shared hosting.
+#
+# This file is copied verbatim into the build output and must sit in
+# public_html alongside index.html.
+#
+# The single most important rule here is the SPA fallback. Without it, a visitor
+# opening kalapritidesigns.com/services directly gets Apache's 404, because no
+# such file exists on disk — the route only exists inside the JavaScript router.
+# Rewriting to index.html serves the app with a real HTTP 200, which is also why
+# this setup is better for search engines than the GitHub Pages workaround it
+# replaces (that one answered deep links with a 404 status).
+
+# ─────────────── HTTPS ───────────────
+# Hostinger terminates TLS upstream, so trust the forwarded header rather than
+# %{HTTPS}, which is often "off" even on a secure request.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ─────────────── SPA routing ───────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Never rewrite files or directories that actually exist — this is what keeps
+  # /assets/*, robots.txt and sitemap.xml serving normally.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else is a client-side route: hand it the app.
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# ─────────────── Caching ───────────────
+# Asset filenames carry a content hash, so they can be cached indefinitely.
+# index.html must never be cached, or visitors keep loading the old build after
+# a deploy while the hashed files it references have already changed.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 1 year"
+  ExpiresByType application/javascript  "access plus 1 year"
+  ExpiresByType image/avif              "access plus 1 year"
+  ExpiresByType image/webp              "access plus 1 year"
+  ExpiresByType image/png               "access plus 1 year"
+  ExpiresByType image/jpeg              "access plus 1 year"
+  ExpiresByType image/svg+xml           "access plus 1 year"
+  ExpiresByType font/woff2              "access plus 1 year"
+  ExpiresByType video/mp4               "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|avif|webp|png|jpe?g|svg|woff2?|mp4)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # ─────────────── Security ───────────────
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ─────────────── Compression ───────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# AVIF is still missing from some default mime.types; without this Apache sends
+# it as application/octet-stream and the browser silently skips the source.
+<IfModule mod_mime.c>
+  AddType image/avif  .avif
+  AddType image/webp  .webp
+  AddType font/woff2  .woff2
+</IfModule>
+
+# ─────────────── Hardening ───────────────
+Options -Indexes
+
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>

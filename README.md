@@ -8,21 +8,14 @@ React 19 + Vite, deployed to GitHub Pages.
 
 ## Naming
 
-Brand, repository and deploy path are all **`kalapriti`** — they were reconciled
-on 17 Sep 2026 when the repo was renamed from `kalapreeti`.
+Brand, repository and domain are all **kalapriti** / **Kalapriti Designs**.
+"Kalapriti Associates" was retired on 23 Sep 2026 and must not reappear.
 
-They agree today, but they are still *different things*, and conflating them
-broke production twice before the rename. The rules stand:
-
-- `vite.config.js` → `base` is the **only** place the deploy path is written.
+- `vite.config.js` -> `base` is the **only** place the deploy path is written
+  (now `/`, since the site is served from the domain apex).
 - Every asset URL is built with `asset()` from `src/data/site.js`, which reads
-  `import.meta.env.BASE_URL`. **Never hardcode the prefix in a component.**
+  `import.meta.env.BASE_URL`. **Never hardcode a prefix in a component.**
 - Every brand string comes from `BRAND` in `src/data/site.js`.
-
-GitHub Pages serves a project site from `/<repo-name>/`, case-sensitively — so
-the path follows the *repo*, not the brand. When the site moves to
-`kalapriti.com`, set `base` to `/` and update the absolute URLs in
-`index.html`, `public/sitemap.xml` and `public/robots.txt` (each says so inline).
 
 ---
 
@@ -53,13 +46,34 @@ public/
 Content lives in `src/data/`, not in components. To change a service, a process
 step or the phone number, edit the data file.
 
-## Routing on GitHub Pages
+## Hosting & routing
 
-Pages has no SPA rewrite, so a deep link like `/kalapriti/services` would 404.
-`public/404.html` encodes the path into a query string and redirects to the
-index, where a snippet in `index.html` restores the URL before React mounts.
-Both halves must stay in step. Remove them if the site moves to a host with
-proper rewrites (Netlify, Vercel).
+The site is static and lives in `public_html` on **Hostinger shared hosting** at
+**kalapritidesigns.com**. Nothing about hosting depends on the repository being
+public.
+
+`public/.htaccess` is copied verbatim into the build and is what makes the SPA
+work on Apache: any path that is not a real file or directory is rewritten to
+`index.html`, so `/services` is served with a genuine **HTTP 200**. It also
+forces HTTPS, sets long cache lifetimes on hashed assets while keeping
+`index.html` uncached, and adds the AVIF/WebP mime types Apache still omits.
+
+If `.htaccess` is ever lost from `public_html`, every deep link 404s. CI fails
+the build if the file is missing from `dist/` or has lost its rewrite rule.
+
+### Deploys
+
+`.github/workflows/deploy.yml` lints, builds and verifies on every pull request,
+and on a push to `main` uploads `dist/` to `public_html` over FTPS. Only changed
+files transfer. Three repo secrets are required:
+
+| Secret | Where to find it |
+|---|---|
+| `FTP_SERVER` | hPanel -> Files -> FTP Accounts |
+| `FTP_USERNAME` | same |
+| `FTP_PASSWORD` | same |
+
+Credentials live only in GitHub Secrets and are never committed.
 
 ## Design — "the drawing set"
 
