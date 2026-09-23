@@ -1,14 +1,14 @@
-# Kalapreeti Associates Corporate Structure
+# Kalapriti Designs Corporate Structure
 
 ## Current Model
 
-- **Parent Company:** Kalapreeti Associates
+- **Parent Company:** Kalapriti Designs
 - **Business Nature:** Architectural and Design Consultancy
 - **Operating Mode:** Digital-first studio presence
 
 ## Future Expansion Model
 
-Kalapreeti Associates is the parent brand and will incubate child companies to diversify services and scale delivery.
+Kalapriti Designs is the parent brand and will incubate child companies to diversify services and scale delivery.
 
 ### Planned Child Company Tracks
 

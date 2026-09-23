@@ -1,28 +1,32 @@
-# CI for Kalapriti Associates.
+# CI for Kalapriti Designs.
 #
-# Pull requests: lint + build + verify the deploy path. Nothing is published.
-# Push to main:  the same checks, then publish dist/ to the gh-pages branch —
-#                the branch GitHub Pages already serves from, so no repo
-#                settings change is needed.
+#   dev branch  -> lint + build + verify only. No deploy. It is an integration
+#                  branch for organising work before it is proposed to main.
+#   main branch -> the same checks, then publish dist/ to gh-pages, which
+#                  GitHub Pages serves at https://kalapritidesigns.com
 #
-# The "verify base path" step exists because this site broke twice from a
-# hand-edited Vite base. If the built HTML doesn't reference /kalapriti/, the
-# job fails before anything is deployed.
+# The domain is set by public/CNAME (copied into dist/ by the build), so no
+# repository admin access is required to configure it.
+#
+# The verify step exists because this site has twice been broken by a wrong base
+# path, and once by a missing SPA fallback. Both now fail the job before
+# anything is published.
 
 name: build-and-deploy
 
 on:
   pull_request:
-    branches: [main]
+    branches: [dev, main]
   push:
-    branches: [main]
+    branches: [dev, main]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: pages-deploy
+  # Keyed per branch so a dev check never cancels a production deploy.
+  group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -45,24 +49,42 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify base path
+      - name: Verify build output
         run: |
-          if ! grep -q 'src="/kalapriti/assets/' dist/index.html; then
-            echo "::error::dist/index.html does not reference /kalapriti/assets/ — Vite base is wrong. Refusing to deploy."
+          set -e
+          # Apex domain: assets must be root-relative, never subpath-prefixed.
+          grep -q 'src="/assets/' dist/index.html \
+            || { echo "::error::dist/index.html has no root-relative asset URLs — Vite base is wrong."; exit 1; }
+          # Any /kalapriti/ anywhere in the HTML is a leak: the favicon and the
+          # hero preload are hardcoded attributes Vite only rewrites when they
+          # are authored root-relative, and both 404 on the apex domain.
+          if grep -q '/kalapriti/' dist/index.html; then
+            echo "::error::build still carries the /kalapriti/ subpath:"
+            grep -o '[^"]*/kalapriti/[^"]*' dist/index.html | sed 's/^/  /'
             exit 1
           fi
-          test -f dist/404.html || { echo "::error::dist/404.html missing — SPA deep links would break"; exit 1; }
-          echo "base path and SPA fallback OK"
+          # Without CNAME, Pages drops the custom domain on the next deploy.
+          test -f dist/CNAME \
+            || { echo "::error::dist/CNAME missing — Pages would revert to the github.io URL."; exit 1; }
+          grep -q 'kalapritidesigns.com' dist/CNAME \
+            || { echo "::error::dist/CNAME does not contain kalapritidesigns.com"; exit 1; }
+          # Without this shim every deep link 404s on Pages.
+          test -f dist/404.html \
+            || { echo "::error::dist/404.html missing — deep links would break."; exit 1; }
+          grep -q 'pathSegmentsToKeep = 0' dist/404.html \
+            || { echo "::error::404.html has the wrong pathSegmentsToKeep for an apex domain."; exit 1; }
+          echo "build output OK"
 
-      - name: Upload build
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
           retention-days: 7
 
-      - name: Deploy to gh-pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      # Only main publishes. dev stops at the checks above.
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref_name == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
