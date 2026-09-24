@@ -1,15 +1,56 @@
-import { Phone } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Phone, X } from 'lucide-react'
 import { CONTACT } from '../data/site'
 
 /**
- * Two floating contact actions — WhatsApp and dial — pinned to the right edge.
+ * Floating contact actions — WhatsApp, and a Call button that opens a small
+ * menu of numbers.
  *
- * The client asked for these as the immediate contact route; the compass motif
- * from the business card is deferred to a later pass. They sit above everything
- * except the nav, clear the phone's home indicator via safe-area inset, and
- * collapse to icon-only on small screens so they never cover content.
+ * Call opens a menu rather than dialling straight away because the practice
+ * publishes two numbers; dialling one of them silently would make the other
+ * unreachable from here. WhatsApp stays a direct link — it only has one
+ * destination, so a menu would be friction for nothing.
+ *
+ * The menu closes on Escape (returning focus to the trigger), on a click
+ * outside, and on choosing a number. Numbers are plain `tel:` anchors, so
+ * long-press, copy and "add to contacts" all behave natively.
  */
 export default function FloatingActions() {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+  const triggerRef = useRef(null)
+  const firstItemRef = useRef(null)
+
+  const numbers = [
+    { label: CONTACT.phone, href: CONTACT.phoneHref },
+    CONTACT.phoneAlt && { label: CONTACT.phoneAlt, href: CONTACT.phoneAltHref },
+  ].filter(Boolean)
+
+  useEffect(() => {
+    if (!open) return
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+    // Pointer rather than click: fires before the anchor navigates, so the menu
+    // is already closing if the tap landed outside it.
+    const onPointerDown = (e) => {
+      if (!wrapRef.current?.contains(e.target)) setOpen(false)
+    }
+
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onPointerDown)
+    firstItemRef.current?.focus()
+
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [open])
+
   return (
     <div className="fab" role="group" aria-label="Contact shortcuts">
       <a
@@ -28,10 +69,46 @@ export default function FloatingActions() {
         <span className="fab__label">WhatsApp</span>
       </a>
 
-      <a className="fab__btn fab__btn--call" href={CONTACT.phoneHref} aria-label={`Call ${CONTACT.phone}`}>
-        <Phone size={18} aria-hidden="true" />
-        <span className="fab__label">Call</span>
-      </a>
+      <div className="fab__wrap" ref={wrapRef}>
+        <div id="call-menu" className="fab__menu" hidden={!open}>
+          <div className="fab__menu-head">
+            <span>Call us</span>
+            <button
+              type="button"
+              className="fab__menu-close"
+              aria-label="Close"
+              onClick={() => { setOpen(false); triggerRef.current?.focus() }}
+            >
+              <X size={14} aria-hidden="true" />
+            </button>
+          </div>
+          {numbers.map((n, i) => (
+            <a
+              key={n.href}
+              ref={i === 0 ? firstItemRef : undefined}
+              href={n.href}
+              className="fab__menu-item"
+              onClick={() => setOpen(false)}
+            >
+              <Phone size={15} aria-hidden="true" />
+              {n.label}
+            </a>
+          ))}
+        </div>
+
+        <button
+          ref={triggerRef}
+          type="button"
+          className="fab__btn fab__btn--call"
+          aria-expanded={open}
+          aria-controls="call-menu"
+          aria-label={open ? 'Close call menu' : 'Call us'}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <Phone size={18} aria-hidden="true" />
+          <span className="fab__label">Call</span>
+        </button>
+      </div>
     </div>
   )
 }
