@@ -64,7 +64,6 @@ export default function Nav() {
         </nav>
 
         <div className="nav__actions">
-          <a href={CONTACT.phoneHref} className="nav__phone">{CONTACT.phone}</a>
           <Link href="/contact" className="nav__cta">Enquire</Link>
           <button
             ref={toggleRef}
