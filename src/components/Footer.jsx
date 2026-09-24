@@ -28,6 +28,7 @@ export default function Footer() {
             <div className="footer__col">
               <h3 className="eyebrow">Contact</h3>
               <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+              {CONTACT.phoneAlt && <a href={CONTACT.phoneAltHref}>{CONTACT.phoneAlt}</a>}
               <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
               <p className="footer__note">{CONTACT.addressNote}</p>
             </div>

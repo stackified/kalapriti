@@ -48,9 +48,16 @@ export const HERO_VIDEO = null
 export const CONTACT = {
   principal: 'Jitendrakumar Patel',
   principalRole: 'Principal Consultant',
+  // Primary: drives the header, hero, floating Call/WhatsApp buttons, the
+  // contact form handoff, and the number Google reads from the JSON-LD.
   phone: '+91 75677 50161',
   phoneHref: 'tel:+917567750161',
   whatsappHref: 'https://wa.me/917567750161',
+  // Secondary: shown wherever someone is actively looking for a way to get in
+  // touch (contact page, footer). Deliberately not on the buttons — two calls
+  // to action competing for the same tap helps nobody.
+  phoneAlt: '+91 96387 34126',
+  phoneAltHref: 'tel:+919638734126',
   email: 'kalapritidesigns@gmail.com',
   // Online-only practice — client confirmed no published address (Q9).
   address: null,
