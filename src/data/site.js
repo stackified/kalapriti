@@ -58,6 +58,7 @@ export const CONTACT = {
   // to action competing for the same tap helps nobody.
   phoneAlt: '+91 96387 34126',
   phoneAltHref: 'tel:+919638734126',
+  whatsappAltHref: 'https://wa.me/919638734126',
   email: 'kalapritidesigns@gmail.com',
   // Online-only practice — client confirmed no published address (Q9).
   address: null,

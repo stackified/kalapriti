@@ -156,10 +156,6 @@ main, .footer { position: relative; z-index: 1; }
 .nav__link:hover::after, .nav__link.is-active::after { transform: scaleX(1); transform-origin: left; }
 
 .nav__actions { display: flex; align-items: center; gap: 18px; }
-.nav__phone {
-  font-size: var(--step-0); font-weight: 500; color: var(--text-strong); white-space: nowrap;
-}
-.nav__phone:hover { color: var(--accent-deep); }
 .nav__cta {
   padding: 10px 20px;
   background: var(--olive-700); color: var(--off-white);
@@ -201,7 +197,7 @@ main, .footer { position: relative; z-index: 1; }
   .nav__toggle { display: inline-flex; }
 }
 @media (max-width: 620px) {
-  .nav__phone, .nav__cta { display: none; }
+  .nav__cta { display: none; }
   .nav__mark { height: 34px; }
   .nav__brand-text strong { font-size: 16px; }
 }
