@@ -48,9 +48,9 @@ export const HERO_VIDEO = null
 export const CONTACT = {
   principal: 'Jitendrakumar Patel',
   principalRole: 'Principal Consultant',
-  phone: '+91 94285 79905',
-  phoneHref: 'tel:+919428579905',
-  whatsappHref: 'https://wa.me/919428579905',
+  phone: '+91 75677 50161',
+  phoneHref: 'tel:+917567750161',
+  whatsappHref: 'https://wa.me/917567750161',
   email: 'kalapritidesigns@gmail.com',
   // Online-only practice — client confirmed no published address (Q9).
   address: null,
