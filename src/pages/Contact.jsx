@@ -115,6 +115,12 @@ export default function Contact() {
                 <Phone size={18} aria-hidden="true" />
                 {CONTACT.phone}
               </a>
+              {CONTACT.phoneAlt && (
+                <a href={CONTACT.phoneAltHref} className="contact-phone contact-phone--alt">
+                  <Phone size={15} aria-hidden="true" />
+                  {CONTACT.phoneAlt}
+                </a>
+              )}
               <p className="contact-person">
                 {CONTACT.principal}<br />
                 <span>{CONTACT.principalRole}</span>
