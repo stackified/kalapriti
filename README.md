@@ -115,3 +115,7 @@ vulnerabilities.
 
 ESLint note: the config has no `jsx-uses-vars`, so a capitalised *parameter* used
 only as a JSX tag reads as unused. Bind it to a `const` instead (see `Reveal.jsx`).
+
+## License
+
+Proprietary. Copyright (c) 2026 Kalapriti Designs. All rights reserved. Designed and developed by [Stackified](https://github.com/stackified). See [LICENSE](LICENSE).
