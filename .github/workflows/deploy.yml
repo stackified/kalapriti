@@ -54,7 +54,7 @@ jobs:
           set -e
           # Apex domain: assets must be root-relative, never subpath-prefixed.
           grep -q 'src="/assets/' dist/index.html \
-            || { echo "::error::dist/index.html has no root-relative asset URLs — Vite base is wrong."; exit 1; }
+            || { echo "::error::dist/index.html has no root-relative asset URLs; Vite base is wrong."; exit 1; }
           # Any /kalapriti/ anywhere in the HTML is a leak: the favicon and the
           # hero preload are hardcoded attributes Vite only rewrites when they
           # are authored root-relative, and both 404 on the apex domain.
@@ -65,12 +65,12 @@ jobs:
           fi
           # Without CNAME, Pages drops the custom domain on the next deploy.
           test -f dist/CNAME \
-            || { echo "::error::dist/CNAME missing — Pages would revert to the github.io URL."; exit 1; }
+            || { echo "::error::dist/CNAME missing; Pages would revert to the github.io URL."; exit 1; }
           grep -q 'kalapritidesigns.com' dist/CNAME \
             || { echo "::error::dist/CNAME does not contain kalapritidesigns.com"; exit 1; }
           # Without this shim every deep link 404s on Pages.
           test -f dist/404.html \
-            || { echo "::error::dist/404.html missing — deep links would break."; exit 1; }
+            || { echo "::error::dist/404.html missing; deep links would break."; exit 1; }
           grep -q 'pathSegmentsToKeep = 0' dist/404.html \
             || { echo "::error::404.html has the wrong pathSegmentsToKeep for an apex domain."; exit 1; }
           echo "build output OK"

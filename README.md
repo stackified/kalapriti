@@ -2,27 +2,30 @@
 
 Website for **Kalapriti Designs**, an architectural and design consultancy.
 
-React 19 + Vite, deployed to GitHub Pages.
+React 19 + Vite, deployed to GitHub Pages at
+**[kalapritidesigns.com](https://kalapritidesigns.com)**.
 
 ---
 
 ## Naming
 
-Brand, repository and deploy path are all **`kalapriti`** — they were reconciled
-on 17 Sep 2026 when the repo was renamed from `kalapreeti`.
+Brand and repository are both **`kalapriti`**: they were reconciled on
+17 Sep 2026 when the repo was renamed from `kalapreeti`.
 
-They agree today, but they are still *different things*, and conflating them
-broke production twice before the rename. The rules stand:
+Brand, repository and deploy path are still *different things*, and conflating
+them broke production twice before the rename. The rules stand:
 
 - `vite.config.js` → `base` is the **only** place the deploy path is written.
 - Every asset URL is built with `asset()` from `src/data/site.js`, which reads
   `import.meta.env.BASE_URL`. **Never hardcode the prefix in a component.**
 - Every brand string comes from `BRAND` in `src/data/site.js`.
 
-GitHub Pages serves a project site from `/<repo-name>/`, case-sensitively — so
-the path follows the *repo*, not the brand. When the site moves to
-`kalapriti.com`, set `base` to `/` and update the absolute URLs in
-`index.html`, `public/sitemap.xml` and `public/robots.txt` (each says so inline).
+The site is served from the custom domain `kalapritidesigns.com` (set by
+`public/CNAME`), so `base` is `/`. It is read from `VITE_BASE`, so a one-off
+preview build for `stackified.github.io/kalapriti/` can be produced with
+`VITE_BASE=/kalapriti/` without editing the config. The absolute URLs in
+`index.html`, `public/sitemap.xml` and `public/robots.txt` point at
+`kalapritidesigns.com`.
 
 ---
 
@@ -30,56 +33,72 @@ the path follows the *repo*, not the brand. When the site moves to
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/kalapriti/
+npm run dev      # http://localhost:5173/
 npm run build
 npm run lint
 npm run deploy   # builds, then publishes dist/ to the gh-pages branch
 ```
+
+CI (`.github/workflows/deploy.yml`) runs lint, build and a build-output check on
+every push and pull request to `dev` and `main`. Only pushes to `main` publish
+`dist/` to the `gh-pages` branch, which GitHub Pages serves at
+`kalapritidesigns.com`.
 
 ## Structure
 
 ```
 src/
   data/          all copy, services, process steps, contact details
-  components/    Nav, Footer, Layout, Reveal, PageHeader
+  components/    Nav, Footer, Layout, Reveal, PageHeader, Picture, Cursor,
+                 Atmosphere, FloatingActions
+  lib/           motion.js (GSAP + ScrollTrigger entry point)
   pages/         Home, Projects, Services, Process, Resources, About, Contact, NotFound
   index.css      design tokens (colour, type, spacing)
   App.css        component styles
 public/
-  404.html       GitHub Pages SPA fallback — see note below
+  CNAME          custom domain (kalapritidesigns.com)
+  assets/        images and logo files
   robots.txt, sitemap.xml
 ```
+
+`404.html` (the GitHub Pages SPA fallback) is not in `public/`: it is generated
+into `dist/` by `vite.config.js` at build time. See the note below.
 
 Content lives in `src/data/`, not in components. To change a service, a process
 step or the phone number, edit the data file.
 
 ## Routing on GitHub Pages
 
-Pages has no SPA rewrite, so a deep link like `/kalapriti/services` would 404.
-`public/404.html` encodes the path into a query string and redirects to the
-index, where a snippet in `index.html` restores the URL before React mounts.
+Pages has no SPA rewrite, so a deep link like `/services` would 404.
+`404.html`, written into `dist/` by a build plugin in `vite.config.js` (which
+derives `pathSegmentsToKeep` from the base), encodes the path into a query
+string and redirects to the index, where a snippet in `index.html` restores the
+URL before React mounts.
 Both halves must stay in step. Remove them if the site moves to a host with
 proper rewrites (Netlify, Vercel).
 
-## Design — "the drawing set"
+## Design: "the drawing set"
 
-The site reads as an architect's drawing set: cream sheet, a faint drafting grid
-with a heavier line every eighth cell, deep green as ink, hairline rules and
-dimension lines as chrome, and a sheet code on every page (`A-000` cover through
-`A-600` contact — see `NAV` in `src/data/site.js`). Colour is the client's green
-palette plus the warm neutrals from their portfolio PDF; type is Instrument Serif
-for display over Instrument Sans.
+The site reads as an architect's drawing set: a light beige sheet, a faint
+drafting grid with a heavier line every eighth cell, dusky olive as ink, and
+hairline rules and dimension lines as chrome. The per-page sheet codes were
+removed at the client's request (see `src/components/PageHeader.jsx`). Colour is
+the palette agreed with the client: white and beige grounds, a desaturated dusky
+olive green, and burgundy as the accent (tokens in `src/index.css`); type is
+EB Garamond for display over DM Sans.
 
 Motion is owned by **GSAP + ScrollTrigger** (`src/lib/motion.js` is the single
 entry point). **Lenis** provides smooth scroll, synced to ScrollTrigger in
 `Layout.jsx`. The hero is one orchestrated timeline; the Process page is the
-showpiece — a sticky ghost numeral counts 01→06 and the rail fills as you
+showpiece: a sticky ghost numeral counts 01→06 and the rail fills as you
 scroll. Everything degrades to a fully readable static page under
 `prefers-reduced-motion`, and the hero has a safety timer so it can never stay
 clipped if a tab loads unfocused (rAF suspended).
 
-Desktop-only extras — the drafting crosshair cursor and magnetic CTAs — sit
-behind `FEATURES` in `src/data/site.js`. Flip a flag to disable one.
+Desktop-only extras (the drafting crosshair cursor and magnetic CTAs) run only
+with a fine pointer and stand down under reduced motion. The cursor, Lenis
+smooth scroll and the grain overlay sit behind `FEATURES` in
+`src/data/site.js`. Flip a flag to disable one.
 
 ### Images
 
@@ -99,10 +118,9 @@ hero is preloaded from `index.html` so the LCP image starts with the HTML.
 
 | Thing | State |
 |---|---|
-| Projects | Placeholder — flagged in UI via `PROJECTS_ARE_PLACEHOLDER` |
-| Resources | Prototype for client review — `RESOURCES_ARE_PROTOTYPE` |
+| Projects | Placeholder, flagged in UI via `PROJECTS_ARE_PLACEHOLDER`; hidden from menus (`hidden: true` in `NAV`) |
+| Resources | Prototype for client review (`RESOURCES_ARE_PROTOTYPE`); hidden from menus |
 | Contact form | Sends via WhatsApp; swap `MODE` in `src/pages/Contact.jsx` once an inbox exists |
-| Instagram | Points at instagram.com — real handle pending |
 | OG image | Reuses `hero.png`; needs a 1200×630 card |
 | Logo wordmark | `logo-mark.svg` contains a live `<text>` element set in **High Tower Text**. That font is not embedded, so the "riti" glyphs fall back to a default serif on most machines. Ask the client for a version with the text converted to outlines. |
 
