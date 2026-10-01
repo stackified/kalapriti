@@ -127,11 +127,18 @@ export default function Gallery() {
                     onClick={(e) => { opener.current = e.currentTarget; setOpen(i) }}
                     aria-label={item.alt || `Open image ${i + 1} of ${GALLERY.length}`}
                   >
+                    {/* The first tile is the page's LCP, so it gets priority
+                        rather than lazy-loading, which made the browser wait for
+                        layout before it would start the download. Only the
+                        first: making the rest of the row eager too was measured
+                        and was slower, as three images then split the bandwidth
+                        the LCP one needs. */}
                     <Picture
                       name={item.name}
                       alt=""
                       sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
                       imgClassName="gallery__img"
+                      priority={i === 0}
                     />
                   </button>
                 </Reveal>

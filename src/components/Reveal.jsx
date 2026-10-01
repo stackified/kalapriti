@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { gsap, reducedMotion } from '../lib/motion'
+import { gsap, reducedMotion, isInitialLoad, onScreen } from '../lib/motion'
 
 /**
  * Scroll reveal on GSAP + ScrollTrigger.
@@ -33,6 +33,8 @@ export default function Reveal({
   useEffect(() => {
     const el = ref.current
     if (!el || reducedMotion()) return
+    // Already painted by the prerendered HTML: leave it. See isInitialLoad.
+    if (isInitialLoad() && onScreen(el)) return
 
     const targets = variant === 'lines' ? Array.from(el.children) : el
     let from, to
@@ -46,13 +48,19 @@ export default function Reveal({
         from = { clipPath: 'inset(100% 0 0 0)', scale: 1.06 }
         to = { clipPath: 'inset(0% 0 0 0)', scale: 1, duration: 1.2, ease: 'power3.out' }
         break
+      // opacity, never autoAlpha. autoAlpha also sets visibility: hidden, and
+      // hidden content is dropped from the accessibility tree — so every
+      // heading below the fold was invisible to screen readers navigating by
+      // heading, to in-page search, and to AI agents reading the tree, until
+      // someone scrolled to it. Lighthouse caught it as a heading-order
+      // failure: with the h2s hidden, the footer's h3s followed the h1.
       case 'lines':
-        from = { autoAlpha: 0, y: 24 }
-        to = { autoAlpha: 1, y: 0, duration: 0.9, stagger }
+        from = { opacity: 0, y: 24 }
+        to = { opacity: 1, y: 0, duration: 0.9, stagger }
         break
       default:
-        from = { autoAlpha: 0, y: 18 }
-        to = { autoAlpha: 1, y: 0, duration: 0.9 }
+        from = { opacity: 0, y: 18 }
+        to = { opacity: 1, y: 0, duration: 0.9 }
     }
 
     const tween = gsap.fromTo(targets, from, {

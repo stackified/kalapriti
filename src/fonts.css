@@ -1,0 +1,48 @@
+/*
+ * Fonts — self-hosted, so first paint never waits on a third-party stylesheet.
+ *
+ * Previously both families came from fonts.googleapis.com: a render-blocking
+ * stylesheet on a second origin (DNS + TLS), which then pulled the font files
+ * from a third. Lighthouse put that at ~820 ms of blocked rendering on mobile.
+ * Now the @font-face rules ship inside our own CSS and the files are served
+ * from this domain with hashed names.
+ *
+ * Variable files, latin subsets only: unicode-range means a browser downloads
+ * a file only if the page actually uses a character from it. Italic is not
+ * imported because nothing on the site sets italic.
+ *
+ * Both families are OFL-licensed; self-hosting is explicitly permitted.
+ */
+@import '@fontsource-variable/dm-sans/wght.css';
+@import '@fontsource-variable/eb-garamond/index.css';
+
+/*
+ * Metric-matched fallbacks.
+ *
+ * Text now paints before the webfonts arrive, in a local fallback. Without
+ * adjustment the swap reflows every line it lands on, which is layout shift.
+ * These resize Arial and Times New Roman to the webfonts' own proportions.
+ *
+ * Computed, not guessed: size-adjust is the ratio of average advance widths
+ * over representative copy from this site, and the ascent/descent overrides
+ * come from each webfont's OS/2 typo metrics (which both set
+ * USE_TYPO_METRICS, so they are the ones browsers use), divided through by
+ * the size adjustment. Regenerate if either family changes.
+ */
+@font-face {
+  font-family: 'DM Sans Fallback';
+  src: local('Arial');
+  size-adjust: 106.00%;
+  ascent-override: 93.59%;
+  descent-override: 29.25%;
+  line-gap-override: 0.00%;
+}
+
+@font-face {
+  font-family: 'EB Garamond Fallback';
+  src: local('Times New Roman');
+  size-adjust: 94.04%;
+  ascent-override: 107.08%;
+  descent-override: 31.69%;
+  line-gap-override: 0.00%;
+}

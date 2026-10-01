@@ -55,7 +55,11 @@ export function useRouteMeta() {
   const [loc] = useLocation()
 
   useEffect(() => {
-    const seo = ROUTE_SEO[loc] ?? NOT_FOUND_SEO
+    // main.jsx strips a trailing slash before the first render, but a lookup
+    // that misses here retitles a real page "Page not found" and noindexes it,
+    // so it is normalised again rather than trusted.
+    const key = loc.length > 1 ? loc.replace(/\/+$/, '') : loc
+    const seo = ROUTE_SEO[key] ?? NOT_FOUND_SEO
     const url = seo.path ? canonicalFor(seo.path) : null
 
     document.title = seo.title

@@ -18,9 +18,15 @@ import './App.css'
  */
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
-export default function App() {
+/**
+ * `ssrPath` is only passed at build time, by src/entry-server.jsx, which
+ * renders each route to static HTML. There is no window.location in Node, so
+ * the router has to be told which page it is drawing. In the browser it is
+ * undefined and wouter reads the real location as normal.
+ */
+export default function App({ ssrPath }) {
   return (
-    <Router base={base}>
+    <Router base={base} ssrPath={ssrPath}>
       <Layout>
         <Switch>
           <Route path="/" component={Home} />

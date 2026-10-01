@@ -23,12 +23,14 @@ MANIFEST_JS = os.path.join(ROOT, 'src', 'data', 'images.js')
 
 # name -> (source file, crop to aspect (w, h) or None, output widths)
 PLAN = {
-    'hero':     ('hero.png',     None,   [640, 1280]),
-    'studio':   ('studio.png',   None,   [640, 960]),
-    'project1': ('project1.png', (4, 3), [480, 960]),
-    'project2': ('project2.png', (4, 3), [480, 960]),
-    'project3': ('project3.png', (4, 3), [480, 960]),
-    'project4': ('project4.png', (4, 3), [480, 960]),
+    # Widths are what real photography should get. Anything above a source's
+    # own width is skipped (see main), so these are a ceiling, not a promise.
+    'hero':     ('hero.png',     None,   [640, 960, 1280, 1920]),
+    'studio':   ('studio.png',   None,   [640, 960, 1280]),
+    'project1': ('project1.png', (4, 3), [480, 960, 1440]),
+    'project2': ('project2.png', (4, 3), [480, 960, 1440]),
+    'project3': ('project3.png', (4, 3), [480, 960, 1440]),
+    'project4': ('project4.png', (4, 3), [480, 960, 1440]),
 }
 AVIF = dict(quality=62)
 WEBP = dict(quality=80, method=6)
@@ -58,14 +60,36 @@ def main():
         if aspect:
             im = center_crop(im, aspect)
         w0, h0 = im.size
-        for w in widths:
-            if w > w0:
-                print(f'  note {name}: {w}w is an upscale of a {w0}px source', file=sys.stderr)
-            r = im.resize((w, round(h0 * w / w0)), Image.LANCZOS)
+
+        # Never upscale. A width wider than the source is a bigger file with
+        # no more detail in it — the old pipeline warned about this and then
+        # did it anyway, so a phone downloaded a 94 kB "1280w" hero that was a
+        # 640 px image stretched. Widths above the source are dropped, and the
+        # source's own width stands in as the largest variant instead. PLAN
+        # can keep asking for big widths; they appear once a big enough
+        # original does.
+        made = sorted({w for w in widths if w <= w0} | ({w0} if any(w > w0 for w in widths) else set()))
+        skipped = [w for w in widths if w > w0]
+        if skipped:
+            print(f'  note {name}: {w0}px source, so not generating {skipped} (would be upscales)', file=sys.stderr)
+
+        for w in made:
+            r = im if w == w0 else im.resize((w, round(h0 * w / w0)), Image.LANCZOS)
             r.save(os.path.join(OUT, f'{name}-{w}.avif'), 'AVIF', **AVIF)
             r.save(os.path.join(OUT, f'{name}-{w}.webp'), 'WEBP', **WEBP)
-        manifest[name] = dict(width=w0, height=h0, widths=widths, fallback=f'assets/{src}')
-        print(f'  {name:<9} {w0}x{h0}  widths={widths}')
+
+        # Remove variants from earlier runs that this run did not produce,
+        # or the old upscales keep shipping from public/ regardless.
+        for f in os.listdir(OUT):
+            stem, ext = os.path.splitext(f)
+            if ext in ('.avif', '.webp') and stem.startswith(f'{name}-'):
+                tail = stem[len(name) + 1:]
+                if tail.isdigit() and int(tail) not in made:
+                    os.remove(os.path.join(OUT, f))
+                    print(f'  removed stale {f}')
+
+        manifest[name] = dict(width=w0, height=h0, widths=made, fallback=f'assets/{src}')
+        print(f'  {name:<9} {w0}x{h0}  widths={made}')
 
     lines = [
         '/**',

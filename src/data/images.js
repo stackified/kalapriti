@@ -4,10 +4,10 @@
  * exist on disk as .avif and .webp. PNG originals stay as the <img> fallback.
  */
 export const IMAGES = {
-  hero: { width: 640, height: 640, widths: [640, 1280], fallback: 'assets/hero.png' },
-  studio: { width: 640, height: 640, widths: [640, 960], fallback: 'assets/studio.png' },
-  project1: { width: 640, height: 480, widths: [480, 960], fallback: 'assets/project1.png' },
-  project2: { width: 640, height: 480, widths: [480, 960], fallback: 'assets/project2.png' },
-  project3: { width: 640, height: 480, widths: [480, 960], fallback: 'assets/project3.png' },
-  project4: { width: 640, height: 480, widths: [480, 960], fallback: 'assets/project4.png' },
+  hero: { width: 640, height: 640, widths: [640], fallback: 'assets/hero.png' },
+  studio: { width: 640, height: 640, widths: [640], fallback: 'assets/studio.png' },
+  project1: { width: 640, height: 480, widths: [480, 640], fallback: 'assets/project1.png' },
+  project2: { width: 640, height: 480, widths: [480, 640], fallback: 'assets/project2.png' },
+  project3: { width: 640, height: 480, widths: [480, 640], fallback: 'assets/project3.png' },
+  project4: { width: 640, height: 480, widths: [480, 640], fallback: 'assets/project4.png' },
 }

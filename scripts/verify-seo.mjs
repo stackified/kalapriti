@@ -76,6 +76,22 @@ for (const route of ROUTES) {
     if (route.noindex && robots.length !== 1) fail(`${rel}: placeholder route is missing noindex`)
     if (!route.noindex && robots.length) fail(`${rel}: indexable route carries a robots tag`)
 
+    // Prerendered content. Same silent failure mode as the head: if the
+    // prerender stopped running, every page would still build and work, and
+    // quietly go back to an empty <div id="root"> that nothing without
+    // JavaScript — most crawlers and AI agents — can read.
+    const rootMatch = html.match(/<div id="root" data-route="([^"]*)">([\s\S]*)<\/div>\s*<\/body>/)
+    if (!rootMatch) {
+      fail(`${rel}: root is not prerendered (no <div id="root" data-route="…"> with content)`)
+    } else {
+      const [, drawnFor, body] = rootMatch
+      if (drawnFor !== route.path) fail(`${rel}: markup was rendered for ${drawnFor}, not ${route.path}`)
+      const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      if (text.length < 300) fail(`${rel}: prerendered body has only ${text.length} characters of text`)
+      if ((body.match(/<h1[\s>]/g) ?? []).length !== 1) fail(`${rel}: prerendered body should have exactly one <h1>`)
+    }
+    if (/<link rel="stylesheet"/.test(html)) fail(`${rel}: stylesheet is linked, not inlined — first paint waits on it`)
+
     const owner = seenTitles.get(title)
     if (owner && owner !== route.path) fail(`${rel} shares its title with ${owner}`)
     seenTitles.set(title, route.path)
@@ -101,6 +117,17 @@ if (problems.length) {
   for (const p of problems) console.error(`::error::${p}`)
   console.error(`\nper-route SEO verification failed: ${problems.length} problem(s)`)
   process.exit(1)
+}
+
+// llms.txt: what Lighthouse's agentic audit requires (an H1 and at least one
+// link), plus every indexable page listed.
+const llms = existsSync(join(DIST, 'llms.txt')) ? read(join(DIST, 'llms.txt')) : ''
+if (!llms) fail('llms.txt was not generated')
+else {
+  if (!/^\s*#\s+.+/m.test(llms)) fail('llms.txt has no H1')
+  for (const r of ROUTES.filter((x) => !x.noindex)) {
+    if (!llms.includes(`(${canonicalFor(r.path)})`)) fail(`llms.txt does not link ${r.path}`)
+  }
 }
 
 const indexed = ROUTES.filter((r) => !r.noindex).length

@@ -30,7 +30,7 @@ export default function Projects() {
             {PROJECTS.map((p, i) => (
               <article key={p.slug} className={`proj ${i % 2 ? 'proj--offset' : ''}`}>
                 <Reveal variant="clip" delay={i * 0.06} className="proj__media">
-                  <Picture name={`project${i + 1}`} alt="" sizes="(max-width: 700px) 100vw, 50vw" />
+                  <Picture name={`project${i + 1}`} alt="" sizes="(max-width: 700px) 100vw, 50vw" priority={i === 0} />
                   <span className="proj__fig">Fig. {String(i + 1).padStart(2, '0')}</span>
                   {p.isPlaceholder && <span className="proj__badge">Placeholder</span>}
                 </Reveal>

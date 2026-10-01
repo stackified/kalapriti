@@ -12,12 +12,16 @@ import { asset } from '../data/site'
  *   anything that isn't full-bleed.
  * - `priority` marks the LCP image: eager, high fetch priority, sync decode.
  *   Everything else lazy-loads.
+ * - `loading` overrides just the loading mode, for images that are on the
+ *   first screen but are not the LCP: eager so they do not wait for layout,
+ *   without competing with the one that is.
  */
 export default function Picture({
   name,
   alt = '',
   sizes = '100vw',
   priority = false,
+  loading,
   className,
   imgClassName,
   style,
@@ -42,7 +46,7 @@ export default function Picture({
         width={meta.width}
         height={meta.height}
         className={imgClassName}
-        loading={priority ? 'eager' : 'lazy'}
+        loading={loading ?? (priority ? 'eager' : 'lazy')}
         decoding={priority ? 'sync' : 'async'}
         fetchPriority={priority ? 'high' : 'auto'}
       />
