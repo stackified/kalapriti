@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'wouter'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Instagram } from 'lucide-react'
 import { BRAND, VISIBLE_NAV, CONTACT, LOGO, asset } from '../data/site'
 
 const isActive = (loc, path) => (path === '/' ? loc === '/' : loc.startsWith(path))
@@ -64,6 +64,18 @@ export default function Nav() {
         </nav>
 
         <div className="nav__actions">
+          {/* Instagram sits in the header because that is where the practice's
+              traffic actually comes from — the first enquiry arrived via the
+              profile. Kept at every width, unlike the Enquire button. */}
+          <a
+            href={CONTACT.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav__social"
+            aria-label={`${BRAND.nameFull} on Instagram`}
+          >
+            <Instagram size={20} aria-hidden="true" />
+          </a>
           <Link href="/contact" className="nav__cta">Enquire</Link>
           <button
             ref={toggleRef}

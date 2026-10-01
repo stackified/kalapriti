@@ -111,16 +111,18 @@ export default function Contact() {
           <div className="contact-aside">
             <Reveal>
               <h2 className="eyebrow">Speak to us</h2>
-              <a href={CONTACT.phoneHref} className="contact-phone">
-                <Phone size={18} aria-hidden="true" />
-                {CONTACT.phone}
-              </a>
-              {CONTACT.phoneAlt && (
-                <a href={CONTACT.phoneAltHref} className="contact-phone contact-phone--alt">
-                  <Phone size={15} aria-hidden="true" />
-                  {CONTACT.phoneAlt}
+              <div className="contact-phones">
+                <a href={CONTACT.phoneHref} className="contact-phone">
+                  <Phone size={18} aria-hidden="true" />
+                  {CONTACT.phone}
                 </a>
-              )}
+                {CONTACT.phoneAlt && (
+                  <a href={CONTACT.phoneAltHref} className="contact-phone">
+                    <Phone size={18} aria-hidden="true" />
+                    {CONTACT.phoneAlt}
+                  </a>
+                )}
+              </div>
               <p className="contact-person">
                 {CONTACT.principal}<br />
                 <span>{CONTACT.principalRole}</span>
