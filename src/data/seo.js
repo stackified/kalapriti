@@ -27,6 +27,8 @@
 // Extension required: vite.config.js loads this file in raw Node, where
 // extensionless specifiers do not resolve even though Vite accepts them.
 import { GALLERY_IS_PLACEHOLDER } from './gallery.js'
+import { PROJECTS_ARE_PLACEHOLDER } from './projects.js'
+import { RESOURCES_ARE_PROTOTYPE } from './resources.js'
 
 export const SITE_URL = 'https://kalapritidesigns.com'
 
@@ -85,21 +87,26 @@ export const ROUTES = [
     noindex: GALLERY_IS_PLACEHOLDER,
   },
 
-  // Routed and reachable, but placeholder content. Indexing them now would put
-  // thin pages in front of the pages that are finished.
+  // On the client's agreed page list, so they stay — but their content is not
+  // ready. Each reads its own data file's flag, the same single switch the
+  // gallery uses: flipping it reveals the nav entry, drops the noindex and adds
+  // the sitemap entry together. Before this, nav and SEO were gated in two
+  // separate places that could drift apart.
   {
     path: '/projects',
     title: 'Projects | Kalapriti Designs',
     description:
       'Exterior and interior work across residential and commercial briefs.',
-    noindex: true,
+    priority: '0.9',
+    noindex: PROJECTS_ARE_PLACEHOLDER,
   },
   {
     path: '/resources',
     title: 'Resources | Kalapriti Designs',
     description:
       'Practical guidance on planning, budgeting and running a design project — free to read, no form in the way.',
-    noindex: true,
+    priority: '0.7',
+    noindex: RESOURCES_ARE_PROTOTYPE,
   },
 ]
 
