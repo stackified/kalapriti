@@ -10,8 +10,9 @@
  * when the router moves between pages client-side, so the tab title and the
  * canonical stay correct without a reload.
  *
- * Keep this file free of imports. vite.config.js loads it in plain Node, where
- * import.meta.env and anything Vite-specific does not exist.
+ * Keep this file free of Vite-specific imports. vite.config.js loads it in
+ * plain Node, where import.meta.env does not exist; plain sibling data modules
+ * are fine, which is how the gallery's one switch reaches this table.
  *
  * Writing rules, so these stay useful rather than decorative:
  *   title       — under ~60 characters before Google truncates it. The brand
@@ -22,6 +23,10 @@
  *                 worth indexing yet. They stay reachable; they stay out of
  *                 the sitemap and out of the index.
  */
+
+// Extension required: vite.config.js loads this file in raw Node, where
+// extensionless specifiers do not resolve even though Vite accepts them.
+import { GALLERY_IS_PLACEHOLDER } from './gallery.js'
 
 export const SITE_URL = 'https://kalapritidesigns.com'
 
@@ -42,9 +47,9 @@ export const ROUTES = [
   },
   {
     path: '/services',
-    title: 'Services — Architecture, Interiors, Landscape | Kalapriti Designs',
+    title: 'Services — Architecture & Interiors | Kalapriti Designs',
     description:
-      'Architecture planning, landscape, interior design and renovation — offered as advisory or end-to-end turnkey delivery. What we take on, and how far we carry it.',
+      'Architecture planning, landscape, interior design and renovation — offered as advisory or end-to-end turnkey delivery. What we take on, and how far.',
     priority: '0.9',
   },
   {
@@ -58,7 +63,7 @@ export const ROUTES = [
     path: '/about',
     title: 'About the Practice | Kalapriti Designs',
     description:
-      'An online-first architecture and design consultancy led by Jitendrakumar Patel, built around brand value and buildable detail. Working across Gujarat and beyond.',
+      'An online-first architecture and design consultancy led by Jitendrakumar Patel, built around brand value and buildable detail. Across Gujarat and beyond.',
     priority: '0.8',
   },
   {
@@ -67,6 +72,17 @@ export const ROUTES = [
     description:
       'Tell us roughly what you have in mind. The first consultation is a conversation, not a commitment. Call, WhatsApp or send an enquiry.',
     priority: '0.9',
+  },
+
+  {
+    path: '/gallery',
+    title: 'Gallery | Kalapriti Designs',
+    description:
+      'Interiors, exteriors and the detail in between — photography from completed Kalapriti Designs projects.',
+    priority: '0.9',
+    // Flips with the gallery's own switch, so the page enters the sitemap and
+    // the index on the same commit that gives it real photographs.
+    noindex: GALLERY_IS_PLACEHOLDER,
   },
 
   // Routed and reachable, but placeholder content. Indexing them now would put
