@@ -2,6 +2,7 @@ import { Router, Route, Switch } from 'wouter'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Projects from './pages/Projects'
+import Gallery from './pages/Gallery'
 import Services from './pages/Services'
 import Process from './pages/Process'
 import Resources from './pages/Resources'
@@ -24,6 +25,7 @@ export default function App() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/projects" component={Projects} />
+          <Route path="/gallery" component={Gallery} />
           <Route path="/services" component={Services} />
           <Route path="/process" component={Process} />
           <Route path="/resources" component={Resources} />
