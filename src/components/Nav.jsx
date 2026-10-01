@@ -41,12 +41,10 @@ export default function Nav() {
     <header className={`nav ${solid ? 'is-solid' : ''} ${open ? 'is-open' : ''}`}>
       <div className="nav__inner container">
         <Link href="/" className="nav__brand" aria-label={`${BRAND.nameFull} — home`}>
+          {/* Mark only — the logo already carries the wordmark. The name lives
+              on the link's aria-label so it is still announced. */}
           <span className="nav__mark" aria-hidden="true">
             <img src={asset(LOGO.dark)} alt="" width="46" height="38" />
-          </span>
-          <span className="nav__brand-text">
-            <strong>{BRAND.nameUpper}</strong>
-            <em>{BRAND.nameSuffix}</em>
           </span>
         </Link>
 

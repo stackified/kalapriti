@@ -10,10 +10,9 @@ export default function Footer() {
       <div className="container">
         <div className="footer__top">
           <div className="footer__brand">
-            <img src={asset(LOGO.reverse)} alt="" aria-hidden="true" width="78" height="64" />
-            <h2 className="serif footer__wordmark">
-              {BRAND.nameUpper}<br />{BRAND.nameSuffix}
-            </h2>
+            {/* Mark only, matching the header. Nothing else in this column
+                names the practice now, so the logo takes a real alt. */}
+            <img src={asset(LOGO.reverse)} alt={BRAND.nameFull} width="78" height="64" />
           </div>
 
           <div className="footer__cols">

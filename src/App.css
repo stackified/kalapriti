@@ -127,18 +127,12 @@ main, .footer { position: relative; z-index: 1; }
 }
 
 .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.nav__brand { display: flex; align-items: center; gap: 13px; }
-.nav__mark { display: block; height: 42px; aspect-ratio: 583.58 / 478.58; flex: 0 0 auto; }
+.nav__brand { display: flex; align-items: center; }
+/* Nudged up from 42px: standing alone it read smaller than it did beside
+   the wordmark. */
+.nav__mark { display: block; height: 48px; aspect-ratio: 583.58 / 478.58; flex: 0 0 auto; }
 .nav__mark img { height: 100%; width: 100%; }
 
-.nav__brand-text { display: flex; flex-direction: column; line-height: 1.08; }
-.nav__brand-text strong {
-  font-size: 18px; font-weight: 600; letter-spacing: .1em; color: var(--text-strong);
-}
-.nav__brand-text em {
-  font-style: normal; font-size: 12px; letter-spacing: .26em;
-  text-transform: uppercase; color: var(--text-muted);
-}
 
 .nav__links { display: flex; align-items: center; gap: 32px; }
 .nav__link {
@@ -208,8 +202,7 @@ main, .footer { position: relative; z-index: 1; }
 }
 @media (max-width: 620px) {
   .nav__cta { display: none; }
-  .nav__mark { height: 34px; }
-  .nav__brand-text strong { font-size: 16px; }
+  .nav__mark { height: 38px; }
 }
 
 /* ─────────────── Hero — light, editorial split ─────────────── */
@@ -652,8 +645,9 @@ main, .footer { position: relative; z-index: 1; }
   display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(36px, 5vw, 80px);
   padding-bottom: clamp(38px, 5vw, 64px); border-bottom: 1px solid var(--line-on-dark);
 }
-.footer__brand img { height: 64px; width: auto; margin-bottom: 18px; }
-.footer__wordmark { font-size: var(--step-2); color: var(--off-white); line-height: 1.06; }
+/* Scaled up now that the mark stands alone in this column — at 64px it read
+   as an orphaned icon rather than the practice's mark. */
+.footer__brand img { height: clamp(84px, 9vw, 116px); width: auto; }
 
 .footer__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 32px; }
 .footer__col { display: flex; flex-direction: column; gap: 11px; align-items: flex-start; min-width: 0; }
