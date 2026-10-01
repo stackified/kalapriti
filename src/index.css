@@ -68,9 +68,13 @@
   --grid-minor: rgba(49, 56, 41, 0.05);
   --grid-major: rgba(49, 56, 41, 0.095);
 
-  /* — Type — */
-  --font-sans:  'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  /* — Type —
+     Self-hosted variable fonts (Fontsource, OFL), so first paint never waits on
+     a third-party stylesheet. Each family is followed by a metric-matched
+     fallback (declared in fonts.css) so the swap from fallback to webfont does
+     not reflow the text it lands on. */
+  --font-sans:  'DM Sans Variable', 'DM Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'EB Garamond Variable', 'EB Garamond Fallback', Georgia, serif;
 
   /* — Scale — slightly larger across the board at the client's request — */
   --step--1: clamp(0.84rem, 0.81rem + 0.12vw, 0.92rem);
@@ -213,6 +217,10 @@ button, input, textarea, select {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
+    /* Without this a delayed animation still holds its element at the start
+       state for the length of the delay, which with a fill-mode of `both` is
+       content hidden for no reason. */
+    animation-delay: 0s !important;
     transition-duration: 0.001ms !important;
   }
 }

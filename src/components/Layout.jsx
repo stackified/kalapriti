@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useLocation } from 'wouter'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
-import { gsap, ScrollTrigger, finePointer, reducedMotion } from '../lib/motion'
+import { gsap, ScrollTrigger, finePointer, reducedMotion, endInitialLoad } from '../lib/motion'
 import { useRouteMeta } from '../lib/seo'
 import { FEATURES } from '../data/site'
 import Nav from './Nav'
@@ -73,10 +73,25 @@ function useMagnetic() {
 /**
  * Route change: jump to top (SPAs don't), then a sheet-change transition —
  * a hairline draws across the top edge and the page settles in from below.
+ *
+ * Route *changes* only. On the first load this used to fade the whole of
+ * <main> in from autoAlpha 0, which on a prerendered page means hiding content
+ * that is already painted until script runs; and it called scrollTo(0, 0),
+ * which threw away the browser's scroll restoration on reload and any #anchor
+ * in the landing URL.
+ *
+ * The comparison is against the previous location rather than a first-run
+ * flag: StrictMode runs effects twice in development, and a flag would let the
+ * second pass animate the initial page.
  */
 function usePageTransition(lenisRef, mainRef, ruleRef) {
   const [loc] = useLocation()
+  const prevLoc = useRef(loc)
   useEffect(() => {
+    if (prevLoc.current === loc) return
+    prevLoc.current = loc
+    endInitialLoad()
+
     if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true })
     else window.scrollTo(0, 0)
 
@@ -87,7 +102,9 @@ function usePageTransition(lenisRef, mainRef, ruleRef) {
     const tl = gsap.timeline()
     tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.inOut', transformOrigin: 'left center' })
       .to(rule, { autoAlpha: 0, duration: 0.3 }, '+=0.1')
-      .fromTo(main, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.7, clearProps: 'transform' }, 0.08)
+      // opacity, not autoAlpha: autoAlpha's visibility: hidden would drop the
+      // arriving page from the accessibility tree for the length of the fade.
+      .fromTo(main, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, clearProps: 'transform' }, 0.08)
     // Layout changed under every ScrollTrigger; recalc after paint.
     const id = requestAnimationFrame(() => ScrollTrigger.refresh())
     return () => { tl.kill(); cancelAnimationFrame(id); gsap.set(rule, { autoAlpha: 1 }) }

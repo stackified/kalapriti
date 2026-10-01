@@ -20,22 +20,11 @@ import { PROCESS } from '../data/process'
 function Hero() {
   const ref = useRef(null)
 
+  // The intro is CSS (see "Hero intro" in App.css) so it starts on the first
+  // frame of the prerendered page. Only the scroll parallax needs script.
   useEffect(() => {
     if (reducedMotion()) return
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.fromTo('.hero__title .line__inner', { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.12 }, 0.2)
-        .fromTo('.hero__lede', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.7)
-        .fromTo('.hero__foot', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.85)
-        .fromTo('.hero__media', { autoAlpha: 0, clipPath: 'inset(0 0 100% 0)' },
-                { autoAlpha: 1, clipPath: 'inset(0 0 0% 0)', duration: 1.3, ease: 'power3.inOut' }, 0.3)
-        .fromTo('.hero__cue', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8 }, 1.3)
-
-      // rAF is suspended in background tabs; a timer still fires. Without this
-      // the headline could stay clipped inside its overflow wrapper.
-      const safety = setTimeout(() => { if (tl.progress() < 1) tl.progress(1) }, 3500)
-      tl.eventCallback('onComplete', () => clearTimeout(safety))
-
       gsap.to('.hero__media-inner', {
         yPercent: 8, ease: 'none',
         scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom top', scrub: true },
@@ -49,7 +38,11 @@ function Hero() {
       <div className="container hero__grid">
         <div className="hero__inner">
           <h1 className="serif hero__title">
-            <span className="line"><span className="line__inner">stories behind</span></span>
+            {/* The space between the lines is load-bearing. The spans are
+                block-level, so it changes nothing visually, but without it the
+                heading's text — what a screen reader announces and what a
+                crawler or agent reads — is "stories behindevery detail". */}
+            <span className="line"><span className="line__inner">stories behind</span></span>{' '}
             <span className="line"><span className="line__inner">every detail</span></span>
           </h1>
 

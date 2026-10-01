@@ -159,7 +159,24 @@ export default function Contact() {
                 </button>
               </div>
             ) : (
-              <form className="form" onSubmit={onSubmit} noValidate>
+              <form
+                className="form"
+                onSubmit={onSubmit}
+                noValidate
+                toolname="send_project_enquiry"
+                tooldescription="Start a project enquiry with Kalapriti Designs, an architecture and interior design practice. Fills in the visitor's name, a phone number or email to reply to, the kind of project, and a short description. The visitor reviews it and sends it themselves."
+              >
+                {/*
+                  WebMCP declarative tool (developer.chrome.com/docs/ai/webmcp):
+                  lets a browser's AI agent find this form and fill it in on the
+                  visitor's behalf.
+
+                  Deliberately no `toolautosubmit`. Submitting opens WhatsApp to
+                  message the practice as the visitor, so the agent fills the
+                  fields and the person presses send — which is the default. With
+                  no agent submissions possible, there is no agentInvoked branch
+                  in onSubmit to handle either.
+                */}
                 {errors.form && <p className="form__error form__error--top" role="alert">{errors.form}</p>}
 
                 <div className="field">
@@ -177,6 +194,7 @@ export default function Contact() {
                   <label htmlFor="contact">Phone or email</label>
                   <input
                     id="contact" name="contact" type="text" autoComplete="tel"
+                    toolparamdescription="A phone number (Indian numbers with or without +91) or an email address the practice can reply to."
                     value={values.contact} onChange={set('contact')}
                     aria-invalid={!!errors.contact}
                     aria-describedby={errors.contact ? 'contact-err' : undefined}
@@ -186,7 +204,10 @@ export default function Contact() {
 
                 <div className="field">
                   <label htmlFor="type">What kind of project?</label>
-                  <select id="type" name="type" value={values.type} onChange={set('type')}>
+                  <select
+                    id="type" name="type" value={values.type} onChange={set('type')}
+                    toolparamdescription="The kind of work wanted. Must be one of the listed options."
+                  >
                     {PROJECT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
@@ -195,6 +216,7 @@ export default function Contact() {
                   <label htmlFor="message">About the project</label>
                   <textarea
                     id="message" name="message" rows="5"
+                    toolparamdescription="A short description: the site location, rough size, current stage, and what the visitor hopes to achieve."
                     value={values.message} onChange={set('message')}
                     placeholder="Location, rough size, what stage you're at, and what you're hoping for."
                     aria-invalid={!!errors.message}
