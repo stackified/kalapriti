@@ -96,7 +96,11 @@ export default function FloatingActions() {
   }
 
   return (
-    <div className="fab" role="group" aria-label="Contact shortcuts" ref={wrapRef}>
+    // <aside>, not a div with role="group": a landmark. Fixed to the viewport,
+    // it sat outside header, main and footer, so anyone moving through the page
+    // by landmark — the usual way with a screen reader — could not reach the
+    // two most useful controls on the site (axe: region).
+    <aside className="fab" aria-label="Contact shortcuts" ref={wrapRef}>
       <div className="fab__wrap">
         {menu('whatsapp', 'WhatsApp us', 'wa', WhatsAppIcon)}
         <button
@@ -128,6 +132,6 @@ export default function FloatingActions() {
           <span className="fab__label">Call</span>
         </button>
       </div>
-    </div>
+    </aside>
   )
 }

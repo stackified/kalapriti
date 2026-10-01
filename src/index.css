@@ -52,7 +52,15 @@
 
   --text:          #40443c;
   --text-strong:   var(--ink);
-  --text-muted:    #6f7468;
+  /* Secondary text. Was #6f7468, which tools score 4.52:1 against plain
+     cream — a pass by 0.02. But no text sits on plain cream: the fixed grain
+     and grid layer (Atmosphere) darken the ground to a measured median of
+     #e6e5e1, where #6f7468 is 3.81:1 and fails AA for normal-size text.
+     Neither Lighthouse nor axe can see through that layer, so both missed it.
+     #5d6157 is 5.03:1 against the measured median and 4.75:1 against its
+     darkest 1%, and 5.52:1 on the tinted (beige-50) sections, where the old
+     value failed even by the tools' own model at 4.18:1. */
+  --text-muted:    #5d6157;
   --text-on-dark:  var(--off-white);
   --text-on-dark-muted: rgba(247, 247, 247, 0.72);
 
