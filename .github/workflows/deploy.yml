@@ -75,6 +75,12 @@ jobs:
             || { echo "::error::404.html has the wrong pathSegmentsToKeep for an apex domain."; exit 1; }
           echo "build output OK"
 
+      # Its own step, because this failure mode is silent: if the per-route emit
+      # stops running the site still builds, deploys and works — every page just
+      # quietly goes back to sharing the homepage's title and link preview.
+      - name: Verify per-route SEO
+        run: npm run verify:seo
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
