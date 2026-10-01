@@ -6,6 +6,8 @@
  * separate concern and lives in vite.config.js; see `asset()` below.
  */
 import { GALLERY_IS_PLACEHOLDER } from './gallery'
+import { PROJECTS_ARE_PLACEHOLDER } from './projects'
+import { RESOURCES_ARE_PROTOTYPE } from './resources'
 
 export const BRAND = {
   name: 'Kalapriti',
@@ -75,14 +77,14 @@ export const CONTACT = {
  */
 export const NAV = [
   { label: 'Home',      path: '/' },
-  { label: 'Projects',  path: '/projects',  hidden: true },
+  { label: 'Projects',  path: '/projects',  hidden: PROJECTS_ARE_PLACEHOLDER },
   // Hidden until the real photography lands. GALLERY_IS_PLACEHOLDER is the one
   // switch: it reveals this entry, drops the noindex and adds the page to the
   // sitemap, so the page cannot go half-live.
   { label: 'Gallery',   path: '/gallery',   hidden: GALLERY_IS_PLACEHOLDER },
   { label: 'Services',  path: '/services' },
   { label: 'Process',   path: '/process' },
-  { label: 'Resources', path: '/resources', hidden: true },
+  { label: 'Resources', path: '/resources', hidden: RESOURCES_ARE_PROTOTYPE },
   { label: 'About',     path: '/about' },
   { label: 'Contact',   path: '/contact' },
 ]
