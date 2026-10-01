@@ -4,7 +4,7 @@ import { ArrowUpRight, ArrowDown } from 'lucide-react'
 import { gsap, reducedMotion } from '../lib/motion'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { BRAND, CONTACT, HERO_VIDEO, asset } from '../data/site'
+import { BRAND, HERO_VIDEO, asset } from '../data/site'
 import { STREAMS } from '../data/services'
 import { PROCESS } from '../data/process'
 
@@ -24,8 +24,7 @@ function Hero() {
     if (reducedMotion()) return
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.fromTo('.hero__eyebrow', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 0.1)
-        .fromTo('.hero__title .line__inner', { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.12 }, 0.2)
+      tl.fromTo('.hero__title .line__inner', { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.12 }, 0.2)
         .fromTo('.hero__lede', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.7)
         .fromTo('.hero__foot', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.85)
         .fromTo('.hero__media', { autoAlpha: 0, clipPath: 'inset(0 0 100% 0)' },
@@ -49,8 +48,6 @@ function Hero() {
     <section className="hero" ref={ref}>
       <div className="container hero__grid">
         <div className="hero__inner">
-          <p className="hero__eyebrow">{BRAND.discipline}</p>
-
           <h1 className="serif hero__title">
             <span className="line"><span className="line__inner">stories behind</span></span>
             <span className="line"><span className="line__inner">every detail</span></span>
@@ -65,7 +62,6 @@ function Hero() {
             <Link href="/contact" className="btn btn--dark">
               Start a project <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
-            <a href={CONTACT.phoneHref} className="hero__phone">{CONTACT.phone}</a>
           </div>
         </div>
 
@@ -196,7 +192,6 @@ function CTA() {
           <Link href="/contact" className="btn btn--dark">
             Start a project <ArrowUpRight size={17} aria-hidden="true" />
           </Link>
-          <a href={CONTACT.phoneHref} className="cta__phone">{CONTACT.phone}</a>
         </Reveal>
       </div>
     </section>

@@ -14,7 +14,6 @@ export default function Footer() {
             <h2 className="serif footer__wordmark">
               {BRAND.nameUpper}<br />{BRAND.nameSuffix}
             </h2>
-            <p className="footer__tag">{BRAND.discipline}</p>
           </div>
 
           <div className="footer__cols">
@@ -35,8 +34,17 @@ export default function Footer() {
 
             <div className="footer__col">
               <h3 className="eyebrow">Follow</h3>
-              <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer" className="footer__social">
-                <Instagram size={15} aria-hidden="true" /> {CONTACT.instagramHandle}
+              {/* Icon only, per the client: the handle is already the brand
+                  name, so spelling it out read as repetition. The label moves
+                  to aria-label so the link is still announced. */}
+              <a
+                href={CONTACT.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__social"
+                aria-label={`${BRAND.nameFull} on Instagram — ${CONTACT.instagramHandle}`}
+              >
+                <Instagram size={26} aria-hidden="true" />
               </a>
               <Link href="/contact" className="footer__cta">
                 Start a project <ArrowUpRight size={15} aria-hidden="true" />
