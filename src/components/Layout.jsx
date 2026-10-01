@@ -3,6 +3,7 @@ import { useLocation } from 'wouter'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import { gsap, ScrollTrigger, finePointer, reducedMotion } from '../lib/motion'
+import { useRouteMeta } from '../lib/seo'
 import { FEATURES } from '../data/site'
 import Nav from './Nav'
 import Footer from './Footer'
@@ -97,6 +98,7 @@ export default function Layout({ children }) {
   const lenisRef = useLenis()
   const mainRef = useRef(null)
   const ruleRef = useRef(null)
+  useRouteMeta()
   useMagnetic()
   usePageTransition(lenisRef, mainRef, ruleRef)
 
