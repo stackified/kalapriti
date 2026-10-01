@@ -89,8 +89,17 @@ jobs:
           retention-days: 7
 
       # Only main publishes. dev stops at the checks above.
+      #
+      # workflow_dispatch counts, deliberately. Gating on push alone meant there
+      # was no way to redeploy without inventing a commit — and on 1 Oct 2026 a
+      # merge to main produced no push event at all (GitHub delivered it, and a
+      # push to dev, roughly 20 minutes late), so main sat undeployed with no
+      # recovery short of an empty commit. A dispatch would run every check and
+      # then skip the one step it was dispatched for.
       - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && github.ref_name == 'main'
+        if: >-
+          github.ref_name == 'main' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
