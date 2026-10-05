@@ -9,7 +9,7 @@
  *
  * Motion is owned by GSAP. CSS transitions handle hover states and the nav
  * panel only. Never animate `transform` in CSS on an element GSAP also moves
- * (.btn, .cursor, .hero__media-inner) — they fight.
+ * (.btn, .hero__media-inner) — they fight.
  */
 
 /* ─────────────── Layering ─────────────── */
@@ -55,26 +55,35 @@ main, .footer { position: relative; z-index: 1; }
 
 /* ─────────────── Cursor ─────────────── */
 
-.has-cursor, .has-cursor * { cursor: none !important; }
-.cursor {
-  position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 9999;
-  pointer-events: none; opacity: 0; mix-blend-mode: difference;
-  transition: opacity .25s var(--ease);
+/*
+ * The drafting crosshair, drawn by the operating system.
+ *
+ * It used to be a page element chasing the mouse: the real pointer was hidden
+ * with cursor: none and a crosshair eased after it over 0.32 s. That trail was
+ * deliberate and the client felt it as a slow mouse. Even with no easing, a
+ * cursor the page draws runs a frame or two behind the one the OS draws, and
+ * hiding the native pointer also took away the I-beam in text fields.
+ *
+ * As a CSS cursor image it moves at the speed of the mouse, needs no script,
+ * and costs nothing to render. Same shapes as before: a 14 px crosshair with a
+ * centre point, opening to a 28 px reticle over anything clickable. It no
+ * longer inverts against what is underneath (an OS cursor cannot blend), so it
+ * is ink with a 1 px light halo, which reads on the cream and on the footer.
+ *
+ * 32 x 32 with the hotspot at its centre: the largest size every platform
+ * accepts. Each value ends in a keyword cursor for anything that refuses the
+ * image. Fine pointers only; touch screens never show a cursor.
+ */
+:root { --cursor: auto; --cursor-link: pointer; }
+@media (pointer: fine) and (hover: hover) {
+  :root {
+    --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M9.5 16.5h14M16.5 9.5v14' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M9.5 16.5h14M16.5 9.5v14' stroke='%231b1d18' stroke-width='1'/%3E%3Ccircle cx='16.5' cy='16.5' r='2.25' fill='%23fff'/%3E%3Ccircle cx='16.5' cy='16.5' r='1.5' fill='%231b1d18'/%3E%3C/svg%3E") 16 16, crosshair;
+    --cursor-link: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M2.5 16.5h28M16.5 2.5v28' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M2.5 16.5h28M16.5 2.5v28' stroke='%231b1d18' stroke-width='1'/%3E%3C/svg%3E") 16 16, pointer;
+  }
 }
-.cursor.is-shown { opacity: 1; }
-.cursor__h, .cursor__v {
-  position: absolute; background: #fff;
-  transition: width .3s var(--ease), height .3s var(--ease), left .3s var(--ease), top .3s var(--ease);
-}
-.cursor__h { width: 14px; height: 1px; left: -7px; top: 0; }
-.cursor__v { width: 1px; height: 14px; top: -7px; left: 0; }
-.cursor__dot {
-  position: absolute; width: 3px; height: 3px; left: -1.5px; top: -1.5px;
-  border-radius: 50%; background: #fff; transition: transform .3s var(--ease);
-}
-.cursor.is-active .cursor__h { width: 28px; left: -14px; }
-.cursor.is-active .cursor__v { height: 28px; top: -14px; }
-.cursor.is-active .cursor__dot { transform: scale(0); }
+html { cursor: var(--cursor); }
+a[href], button, select, summary, label[for], [role="button"] { cursor: var(--cursor-link); }
+input:not([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"]), textarea { cursor: text; }
 
 /* ─────────────── Buttons & links ─────────────── */
 
@@ -83,7 +92,7 @@ main, .footer { position: relative; z-index: 1; }
   padding: 15px 28px;
   border: 1px solid transparent; border-radius: var(--radius);
   font-size: var(--step--1); font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-  cursor: pointer; will-change: transform;
+  cursor: var(--cursor-link); will-change: transform;
   transition: background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease);
 }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
@@ -174,7 +183,7 @@ main, .footer { position: relative; z-index: 1; }
   display: none; align-items: center; justify-content: center;
   width: 44px; height: 44px; background: transparent;
   border: 1px solid var(--line-strong); border-radius: var(--radius);
-  color: var(--text-strong); cursor: pointer;
+  color: var(--text-strong); cursor: var(--cursor-link);
 }
 
 .nav__panel {
@@ -503,7 +512,7 @@ main, .footer { position: relative; z-index: 1; }
 .faq h3 { margin: 0; font-weight: 400; }
 .faq__trigger {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  padding: 20px 0; background: none; border: none; text-align: left; cursor: pointer;
+  padding: 20px 0; background: none; border: none; text-align: left; cursor: var(--cursor-link);
   font-size: var(--step-1); color: var(--text-strong); transition: color .3s var(--ease);
 }
 .faq__trigger:hover { color: var(--accent-deep); }
@@ -638,7 +647,7 @@ main, .footer { position: relative; z-index: 1; }
   display: grid; place-items: center;
   width: 24px; height: 24px; margin-right: -4px;
   background: none; border: none; border-radius: 6px;
-  color: var(--text-muted); cursor: pointer;
+  color: var(--text-muted); cursor: var(--cursor-link);
   transition: background .2s var(--ease), color .2s var(--ease);
 }
 .fab__menu-close:hover { background: var(--beige-100); color: var(--text-strong); }
@@ -728,7 +737,7 @@ main, .footer { position: relative; z-index: 1; }
 .gallery__tile {
   display: block; width: 100%; height: 100%; padding: 0;
   background: var(--beige-100); border: 0; border-radius: var(--radius);
-  overflow: hidden; cursor: pointer;
+  overflow: hidden; cursor: var(--cursor-link);
 }
 .gallery__tile picture { display: block; width: 100%; height: 100%; }
 .gallery__img {
@@ -765,7 +774,7 @@ main, .footer { position: relative; z-index: 1; }
   position: absolute; display: inline-flex; align-items: center; justify-content: center;
   width: 46px; height: 46px; padding: 0;
   background: rgba(247, 247, 247, 0.1); color: var(--off-white);
-  border: 1px solid var(--line-on-dark); border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--line-on-dark); border-radius: 50%; cursor: var(--cursor-link);
   transition: background .3s var(--ease);
 }
 .lightbox__btn:hover { background: rgba(247, 247, 247, 0.2); }
