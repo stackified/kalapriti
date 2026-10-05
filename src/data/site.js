@@ -96,7 +96,7 @@ export const VISIBLE_NAV = NAV.filter((n) => !n.hidden)
  * Feature switches. `cursor` is the desktop drafting crosshair; turn it off if
  * it reads as too playful for the brand.
  */
-export const FEATURES = { cursor: true, smoothScroll: true, grain: true }
+export const FEATURES = { smoothScroll: true, grain: true }
 
 export const VALUES = [
   {

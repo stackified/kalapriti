@@ -8,7 +8,6 @@ import { FEATURES } from '../data/site'
 import Nav from './Nav'
 import Footer from './Footer'
 import Atmosphere from './Atmosphere'
-import Cursor from './Cursor'
 import FloatingActions from './FloatingActions'
 
 /**
@@ -123,7 +122,6 @@ export default function Layout({ children }) {
     <>
       <a className="skip-link" href="#main">Skip to content</a>
       <Atmosphere />
-      <Cursor />
       <div ref={ruleRef} className="sheet-rule" aria-hidden="true" />
       <Nav />
       <main id="main" ref={mainRef}>
